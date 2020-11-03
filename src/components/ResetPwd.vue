@@ -2,8 +2,8 @@
   <div>
   <el-table
     :data="tableData"
-    height="650"
-    style="width:800px;margin-left: 430px">
+    height="630"
+    style="width:680px;margin-left: 430px;margin-top: 40px">
     <el-table-column
       type="index"
       label="序号"
@@ -29,7 +29,7 @@
         <el-button
           size="mini"
           type="danger"
-          @click="handleDelete(scope.$index, scope.row)">重置</el-button>
+          @click="handleReset(scope.$index, scope.row)">重置</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -57,6 +57,7 @@
           totalUsersData:[],
           pageSize: 5,
           curPage: 1,
+          userId:''
         }
       },
       methods:{
@@ -68,6 +69,21 @@
         getUserPwd2(){
           axios.get('/getUser2/').then(res=>{
             this.totalUsersData=res.data
+          })
+        },
+        handleReset(index, row){
+          this.userId=row.userId;
+          axios.get('/gotoResetPwd/'+this.userId).then(res=>{
+            if(res.data>0){
+              // this.$message({
+              //   message: '重置成功',
+              //   type: 'success'
+              // })
+              alert("重置成功")
+            }else{
+              alert("重置失败")
+            }
+            location.reload()
           })
         }
       },
