@@ -17,7 +17,7 @@
 
 <script>
     export default {
-        name: "Login3",
+        name: "Login",
       data(){
           return{
             loginForm:{
