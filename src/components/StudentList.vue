@@ -7,7 +7,7 @@
         <template slot="header" slot-scope="scope">
           <span style="font-size: x-large">学员跟踪表</span>
           <div style="float: right;margin-right: 20px">
-            <el-input placeholder="输入关键字搜索" style="width: 200px"></el-input>
+            <el-input placeholder="输入姓名搜索" style="width: 200px" v-model="filters.f1"></el-input>
             <el-select
               v-model="deptName"
               placeholder="请在下拉框中选择名称"
@@ -20,7 +20,7 @@
                 :value="item.deptName">{{item.deptName}}
               </el-option>
             </el-select>
-            <el-button size="small" icon="el-icon-search" circle></el-button>
+            <el-button size="small" icon="el-icon-search" circle @click="refreshList()"></el-button>
           </div>
         </template>
         <el-table-column
@@ -127,36 +127,82 @@
     name: "StudentList",
     data() {
       return {
+        filters:{//模糊查询的过滤器，绑定input框
+          f1:""
+        },
         tableData: [],
         pageSize: 5,
         curPage: 1,
         totalStudentsData: [],
-        stuname: '',
-        sex: '',
-        university: '',
-        birthplace: '',
-        evlContent: '',
-        s1: '',
-        s2: '',
-        s3: '',
-        s4: ''
+        selectOptionsAll:[],
+        deptName:'',
+        nameStr:'all'//对应filters的f1,用于发送axios请求
       }
     },
     methods: {
+      checkFilter(){
+        if (""!==this.filters.f1){
+          this.nameStr=this.filters.f1
+        }else {
+          this.nameStr="all"
+        }
+      },
+      refreshList(){
+        this.getStudents();
+        this.getStudents2();
+      },
+      //分页+模糊查询
       getStudents() {
-        axios.get('/getStudentList/' + this.curPage + '/' + this.pageSize).then(res => {
+        this.checkFilter();
+        axios.get('/getStudentList/' + this.curPage + '/' + this.pageSize+ '/' + this.nameStr).then(res => {
           this.tableData = res.data
+          for (var i in this.tableData) {
+            if (this.tableData[i].s1 == null) (
+              this.tableData[i].s1="未评价"
+            )
+            if (this.tableData[i].s2 == null) (
+              this.tableData[i].s2="未评价"
+            )
+            if (this.tableData[i].s3 == null) (
+              this.tableData[i].s3="未评价"
+            )
+            if (this.tableData[i].s4 == null) (
+              this.tableData[i].s4="未评价"
+            )
+            if (this.tableData[i].evlcontent == null) (
+              this.tableData[i].evlcontent="未评价"
+            )
+            if (this.tableData[i].z1 == null) (
+              this.tableData[i].z1="未录入"
+            )
+            if (this.tableData[i].z2 == null) (
+              this.tableData[i].z2="未录入"
+            )
+            if (this.tableData[i].z3 == null) (
+              this.tableData[i].z3="未录入"
+            )
+            if (this.tableData[i].z4 == null) (
+              this.tableData[i].z4="未录入"
+            )
+            if (this.tableData[i].z5 == null) (
+              this.tableData[i].z5="未录入"
+            )
+            if (this.tableData[i].z6 == null) (
+              this.tableData[i].z6="未录入"
+            )
+          }
         })
       },
+      //获取所有列表来求个数
       getStudents2() {
-        axios.get('/getStudentList2/').then(res => {
+        this.checkFilter();
+        axios.get('/getStudentList2/'+ '/' + this.nameStr).then(res => {
           this.totalStudentsData = res.data
         })
       }
     },
     mounted() {
-      this.getStudents();
-      this.getStudents2();
+      this.refreshList()
     }
   }
 </script>

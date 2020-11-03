@@ -9,20 +9,22 @@
         <template slot="header" slot-scope="scope">
           <span style="font-size: x-large">学员基本信息</span>
           <div style="float: right;margin-right: 45px">
-            <el-input placeholder="输入关键字搜索" style="width: 200px"></el-input>
-            <el-select
-              v-model="deptName"
-              placeholder="请在下拉框中选择名称"
-              maxlength="255"
-              :disabled="false"
-              clearable>
-              <el-option
-                v-for="item in selectOptionsAll"
-                :key="item.id"
-                :value="item.deptName">{{item.deptName}}
-              </el-option>
-            </el-select>
-            <el-button size="small" icon="el-icon-search" circle></el-button>
+            <el-input placeholder="输入姓名" v-model="filters.f1" style="width: 200px"></el-input>
+            <el-input placeholder="输入部门名称" v-model="filters.f2" style="width: 200px"></el-input>
+            <el-input placeholder="输入职位" v-model="filters.f3" style="width: 200px"></el-input>
+<!--            <el-select-->
+<!--              v-model="deptName"-->
+<!--              placeholder="请在下拉框中选择名称"-->
+<!--              maxlength="255"-->
+<!--              :disabled="false"-->
+<!--              clearable>-->
+<!--              <el-option-->
+<!--                v-for="item in selectOptionsAll"-->
+<!--                :key="item.id"-->
+<!--                :value="item.deptName">{{item.deptName}}-->
+<!--              </el-option>-->
+<!--            </el-select>-->
+            <el-button size="small" icon="el-icon-search" circle @click="refreshList()"></el-button>
             <el-button size="small" type="primary" icon="el-icon-plus" circle @click="handleAdd(scope.$index, scope.row)"></el-button>
             <el-button size="small" type="danger" icon="el-icon-delete" circle></el-button>
           </div>
@@ -143,36 +145,57 @@
     name: "StudentInfoList",
     data() {
       return {
+        filters:{//模糊查询的过滤器，绑定input框
+          f1:"",
+          f2:"",
+          f3:""
+        },
         tableData: [],
         pageSize: 5,
         curPage: 1,
         totalStudentsData: [],
-        dialogTableVisible: false,
+        dialogTableVisible: false,//隐藏编辑对话框
         aData: '',
         deptName:'',
         selectOptionsAll: [],
-        sName:'',
-        dept:'',
-        jobStr:''
+        sName:'all',//对应filters的f1,用于发送axios请求
+        dept:'all',
+        jobStr:'all'
       }
     },
     methods: {
+      checkFilter(){
+        if (""!==this.filters.f1){
+          this.sName=this.filters.f1
+        }else {
+          this.sName="all"
+        }
+        if (""!==this.filters.f2){
+          this.dept=this.filters.f2
+        }else {
+          this.dept="all"
+        }
+        if (""!==this.filters.f3){
+          this.jobStr=this.filters.f3
+        }else {
+          this.jobStr="all"
+        }
+      },
       getStudentsByPage() {
-        this.sName = "all";
-        this.dept = "all";
-        this.jobStr = "all";
+        this.checkFilter();
         axios.get('/getStudentsByPage/' + this.curPage + '/' + this.pageSize + '/' + this.sName + '/' + this.dept + '/' + this.jobStr).then(res => {
           this.tableData = res.data
-          console.log(this.tableData)
         })
       },
       getStudentsByLike() {
-        this.sName = "all";
-        this.dept = "all";
-        this.jobStr = "all";
+        this.checkFilter();
         axios.get('/getStudentsByLike/' + this.sName + '/' + this.dept + '/' + this.jobStr).then(res => {
           this.totalStudentsData = res.data
         })
+      },
+      refreshList(){
+        this.getStudentsByPage();
+        this.getStudentsByLike();
       },
       handleAdd(index, row){
         this.$router.push({path: "/addstudent"});
@@ -189,8 +212,7 @@
       }
     },
     mounted() {
-      this.getStudentsByPage();
-      this.getStudentsByLike();
+      this.refreshList()
     }
   }
 </script>
