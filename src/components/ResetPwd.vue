@@ -75,10 +75,6 @@
           this.userId=row.userId;
           axios.get('/gotoResetPwd/'+this.userId).then(res=>{
             if(res.data>0){
-              // this.$message({
-              //   message: '重置成功',
-              //   type: 'success'
-              // })
               alert("重置成功")
             }else{
               alert("重置失败")

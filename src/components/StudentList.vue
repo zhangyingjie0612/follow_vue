@@ -9,15 +9,13 @@
           <div style="float: right;margin-right: 20px">
             <el-input placeholder="输入姓名搜索" style="width: 200px" v-model="filters.f1"></el-input>
             <el-select
-              v-model="deptName"
-              placeholder="请在下拉框中选择名称"
-              maxlength="255"
-              :disabled="false"
-              clearable>
+              v-model="filters.f2"
+              placeholder="请选择班期"
+              maxlength="255">
               <el-option
                 v-for="item in selectOptionsAll"
                 :key="item.id"
-                :value="item.deptName">{{item.deptName}}
+                :value="item.className">{{item.className}}
               </el-option>
             </el-select>
             <el-button size="small" icon="el-icon-search" circle @click="refreshList()"></el-button>
@@ -128,18 +126,26 @@
     data() {
       return {
         filters:{//模糊查询的过滤器，绑定input框
-          f1:""
+          f1:"",
+          f2:""
         },
         tableData: [],
         pageSize: 5,
         curPage: 1,
         totalStudentsData: [],
         selectOptionsAll:[],
-        deptName:'',
+        className:'all',
         nameStr:'all'//对应filters的f1,用于发送axios请求
       }
     },
     methods: {
+      getDeptName(){
+        this.checkFilter2();
+        axios.get('/toGetClassName/').then(res => {
+          this.selectOptionsAll = res.data
+          this.selectOptionsAll.push({className:"全部列表"})
+        })
+      },
       checkFilter(){
         if (""!==this.filters.f1){
           this.nameStr=this.filters.f1
@@ -147,14 +153,22 @@
           this.nameStr="all"
         }
       },
+      checkFilter2(){
+        if (""!==this.filters.f2&&this.filters.f2!=="全部列表"){
+          this.className=this.filters.f2
+        }else {
+          this.className="all"
+        }
+      },
       refreshList(){
+        this.getDeptName();
         this.getStudents();
         this.getStudents2();
       },
       //分页+模糊查询
       getStudents() {
         this.checkFilter();
-        axios.get('/getStudentList/' + this.curPage + '/' + this.pageSize+ '/' + this.nameStr).then(res => {
+        axios.get('/getStudentList/' + this.curPage + '/' + this.pageSize+ '/' + this.nameStr+'/'+this.className).then(res => {
           this.tableData = res.data
           for (var i in this.tableData) {
             if (this.tableData[i].s1 == null) (
@@ -196,7 +210,7 @@
       //获取所有列表来求个数
       getStudents2() {
         this.checkFilter();
-        axios.get('/getStudentList2/'+ '/' + this.nameStr).then(res => {
+        axios.get('/getStudentList2/'+ '/' + this.nameStr+'/'+this.className).then(res => {
           this.totalStudentsData = res.data
         })
       }

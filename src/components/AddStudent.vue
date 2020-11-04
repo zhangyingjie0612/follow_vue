@@ -1,5 +1,5 @@
 <template>
-  <form action="" style="margin-top: 20px">
+  <el-form action="" style="margin-top: 20px">
     <table style="width: 1200px;height: 600px" align="center" :data="tableData">
       <tr><td colspan="7" style="font-size: x-large;font-weight: bolder">新增学生信息</td></tr>
       <tr>
@@ -33,24 +33,27 @@
       </tr>
       <tr>
         <td style="font-weight: bolder">入职时间</td>
-        <td><input type="text" v-model="tableData.jobtime"></td>
+        <td></td>
         <td style="font-weight: bolder">班期</td>
         <td><input type="text" v-model="tableData.className"></td>
         <td style="font-weight: bolder">部门名称</td>
-        <td><input type="text" v-model="tableData.deptName"></td>
+        <td></td>
       </tr>
       <tr>
+        <td style="font-weight: bolder">职位</td>
+        <td></td>
         <td style="font-weight: bolder">备注</td>
-        <td colspan="6"><input type="text" v-model="tableData.note"></td>
+        <td colspan="4"><input type="text" v-model="tableData.note"></td>
       </tr>
     </table>
     <br><br>
-    <el-button type="primary" @click="onSubmit">提交</el-button>
+    <el-button type="primary" @click="goToSubmit()">提交</el-button>
     <el-button>重置</el-button>
-  </form>
+  </el-form>
 </template>
 
 <script>
+  import axios from 'axios'
   export default {
     name: "AddStudent",
     data() {
@@ -59,8 +62,21 @@
       }
     },
     methods:{
-      onSubmit(){
-
+      goToSubmit(){
+        console.log(this.tableData.length)
+        this.tableData.photo=null;
+        if(undefined===this.tableData.note){
+          this.tableData.note=null
+        }
+        axios.get('/toAddStudent/'+this.tableData.stuName+'/'+this.tableData.sex+'/'+this.tableData.nation+'/'+this.tableData.birthday
+          +'/'+this.tableData.birthplace +'/'+this.tableData.marry+'/'+this.tableData.telephone+'/'+this.tableData.idcard+'/' +this.tableData.university +'/'+this.tableData.major+'/'+this.tableData.photo +'/'+this.tableData.note+'/'+this.tableData.className).then(res => {
+          if(res.data){
+            alert("新增成功")
+            location.reload()
+          }else{
+            alert("新增失败")
+          }
+        })
       }
     }
   }
