@@ -6,6 +6,7 @@ import StudentInfoList from '@/components/StudentInfoList'
 import AddStudent from '@/components/AddStudent'
 import Test from '@/components/Test'
 import ResetPwd from '@/components/ResetPwd'
+import ToGetClass from '@/components/ToGetClass'
 
 Vue.use(Router)
 
@@ -35,6 +36,11 @@ export default new Router({
       path: '/resetpwd',
       name: 'ResetPwd',
       component: ResetPwd
+    },
+    {
+      path: '/toGetClass',
+      name: 'ToGetClass',
+      component: ToGetClass
     }
   ]
 })

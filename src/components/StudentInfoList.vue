@@ -4,6 +4,7 @@
       :data="tableData"
       height="650"
       border
+      @selection-change="handleSelectionChange"
       style="width: 80%;margin-left: 10%;margin-top: 2%">
       <el-table-column>
         <template slot="header" slot-scope="scope">
@@ -26,7 +27,14 @@
 <!--            </el-select>-->
             <el-button size="small" icon="el-icon-search" circle @click="refreshList()"></el-button>
             <el-button size="small" type="primary" icon="el-icon-plus" circle @click="handleAdd()"></el-button>
-            <el-button size="small" type="danger" icon="el-icon-delete" circle @click="delStudents()"></el-button>
+            <el-button size="small" type="danger" icon="el-icon-delete" circle @click="multiDeleteVisible=true"></el-button>
+            <el-dialog :visible.sync="multiDeleteVisible" title="提示" width="30%">
+              <span>确定要删除吗</span>
+              <span slot="footer">
+                <el-button type="primary" @click="delStudents();multiDeleteVisible=false">确 定</el-button>
+                <el-button @click="multiDeleteVisible=false">取消</el-button>
+              </span>
+            </el-dialog>
           </div>
         </template>
         <el-table-column
@@ -213,12 +221,6 @@
         layout="total, prev, pager, next, jumper">
       </el-pagination>
     </div>
-    <el-dialog :visible.sync="multiDeleteVisible" title="提示" width="30%">
-      <span>确定要删除吗</span>
-      <span slot="footer">
-          <el-button type="primary" @click="multiDelete">确 定</el-button>
-        </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -237,6 +239,7 @@
         pageSize: 5,
         curPage: 1,
         totalStudentsData: [],
+        multipleSelection:[],//批量删除选择的复选框数组
         multiDeleteVisible:false,//批量删除的提示框
         dialogTableVisible: false,//隐藏编辑对话框
         dialogTableVisible2:false,
@@ -246,7 +249,26 @@
         sName:'all',//对应filters的f1,用于发送axios请求
         dept:'all',
         jobStr:'all',
-        state:'',
+        updateData:{
+          stuId:'',
+          stuName:'',
+          sex:'',
+          nation:'',
+          birthday:'',
+          birthplace:'',
+          marry:'',
+          telephone:'',
+          idCard:'',
+          university:'',
+          major:'',
+          photo:'',
+          note:'',
+          state:'',
+          className:'',
+          deptName:'',
+          job:'',
+          jobtime:''
+        },
         years:''
       }
     },
@@ -310,26 +332,33 @@
           }
         })
       },
+      handleSelectionChange(val){
+        this.multipleSelection = val;
+        if (this.multipleSelection.length== 0){
+          alert("请先勾选要删除的学生")
+        }
+      },
       //批量删除
       delStudents(){
-        const length = this.multipleSelection.length;
-        let oids = [];
-        for (let i = 0; i < length; i++) {
-          oids.push(this.multipleSelection[i].oid);
+        let ids = [];
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          ids.push(this.multipleSelection[i].stuId);
         }
-        axios.get('/toDelStudents/'+oids).then(res=>{
+        axios.get('/toDelStudents/'+ids).then(res=>{
           if(res.data>0){
             alert("删除成功");
+            location.reload();
           }else{
             alert("删除失败");
           }
         })
       },
       goToSubmit(){
+        this.updateData=this.aData
         //计算学生状态
         if(undefined===this.aData.jobtime||""===this.aData.jobtime){
-          this.state=0;
-          this.aData.jobtime=null
+          this.updateData.state=0;
+          this.updateData.jobtime=null
         }else{
           let yy = new Date().getFullYear();
           let mm = new Date().getMonth() + 1;
@@ -337,52 +366,40 @@
           if((mm-tJob[1])<0){
             this.years=yy-1-tJob[0];
             if(this.years<1){
-              this.state=0;
+              this.updateData.state=0;
             }
             if(this.years<2&&this.years>1){
-              this.state=1;
+              this.updateData.state=1;
             }
             if(this.years<3&&this.years>2){
-              this.state=2;
+              this.updateData.state=2;
             }
             if(this.years>3){
-              this.state=3
+              this.updateData.state=3
             }
           }else{
             this.years=yy-tJob[0];
             if(this.years<1){
-              this.state=0;
+              this.updateData.state=0;
             }
             if(this.years<2&&this.years>1){
-              this.state=1;
+              this.updateData.state=1;
             }
             if(this.years<3&&this.years>2){
-              this.state=2;
+              this.updateData.state=2;
             }
             if(this.years>3){
-              this.state=3
+              this.updateData.state=3
             }
           }
           console.log(this.years)
           console.log(this.state)
         }
-        if(undefined===this.aData.deptName||""===this.aData.deptName){
-          this.aData.deptName=null
-        }
-        if(undefined===this.aData.job||""===this.aData.job){
-          this.aData.job=null
-        }
-        if(undefined===this.aData.note||""===this.aData.note){
-          this.aData.note=null
-        }
-        if(undefined===this.aData.photo||""===this.aData.photo){
-          this.aData.photo=null
-        }
-        axios.get('/toUpdateStudent/'+this.aData.stuId+'/'+this.aData.job+'/'+this.aData.jobtime+'/'+this.aData.deptName+'/'+this.aData.state+'/'+this.aData.stuName+'/'+this.aData.sex+'/'+this.aData.nation+'/'+this.aData.birthday
-          +'/'+this.aData.birthplace +'/'+this.aData.marry+'/'+this.aData.telephone+'/'+this.aData.idCard+'/' +this.aData.university +'/'
-          +this.aData.major+'/'+this.aData.photo +'/'+this.aData.note+'/'+this.aData.className).then(res => {
+        axios.post('/toUpdateStudent/',this.updateData).then(res => {
           if(res.data>0){
             alert("修改成功")
+          }else{
+            alert("修改失败")
           }
         })
       }
