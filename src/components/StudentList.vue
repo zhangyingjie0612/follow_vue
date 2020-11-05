@@ -139,7 +139,7 @@
       }
     },
     methods: {
-      getDeptName(){
+      getClassName(){
         this.checkFilter2();
         axios.get('/toGetClassName/').then(res => {
           this.selectOptionsAll = res.data
@@ -161,7 +161,7 @@
         }
       },
       refreshList(){
-        this.getDeptName();
+        this.getClassName();
         this.getStudents();
         this.getStudents2();
       },

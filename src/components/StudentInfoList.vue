@@ -25,8 +25,8 @@
 <!--              </el-option>-->
 <!--            </el-select>-->
             <el-button size="small" icon="el-icon-search" circle @click="refreshList()"></el-button>
-            <el-button size="small" type="primary" icon="el-icon-plus" circle @click="handleAdd(scope.$index, scope.row)"></el-button>
-            <el-button size="small" type="danger" icon="el-icon-delete" circle></el-button>
+            <el-button size="small" type="primary" icon="el-icon-plus" circle @click="handleAdd()"></el-button>
+            <el-button size="small" type="danger" icon="el-icon-delete" circle @click="delStudents()"></el-button>
           </div>
         </template>
         <el-table-column
@@ -119,7 +119,84 @@
               </table>
             </el-dialog>
             &nbsp;
-            <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="mini" type="success" @click="dialogTableVisible2 = true;handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-dialog title="编辑学生信息" :visible.sync="dialogTableVisible2" width="1200px">
+              <el-form>
+                <table style="width: 1100px;height: 400px" align="center" :data="tableData">
+                  <tr>
+                    <td style="font-weight: bolder;width: 120px">姓名</td>
+                    <td width="200"><input type="text" v-model="aData.stuName"></td>
+                    <td style="font-weight: bolder;width: 120px">性别</td>
+                    <td width="200"><input type="text" v-model="aData.sex"></td>
+                    <td style="font-weight: bolder;width: 120px">民族</td>
+                    <td width="200"><input type="text" v-model="aData.nation"></td>
+                    <td rowspan="5" width="300px"><el-button type="primary" style="margin-left: 70px">上传图片</el-button></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bolder">出生年月</td>
+                    <td>
+                      <el-date-picker
+                        v-model="aData.birthday"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="选择出生日期">
+                      </el-date-picker>
+                    </td>
+                    <td style="font-weight: bolder">籍贯</td>
+                    <td><input type="text" v-model="aData.birthplace"></td>
+                    <td style="font-weight: bolder">婚否</td>
+                    <td><input type="text" v-model="aData.marry"></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bolder">联系电话</td>
+                    <td><input type="text" v-model="aData.telephone"></td>
+                    <td style="font-weight: bolder">身份证号码</td>
+                    <td colspan="3"><input type="text" v-model="aData.idCard"></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bolder">毕业院校</td>
+                    <td><input type="text" v-model="aData.university"></td>
+                    <td style="font-weight: bolder">专业</td>
+                    <td colspan="3"><input type="text" v-model="aData.major"></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bolder">入职时间</td>
+                    <td>
+                      <el-date-picker
+                        v-model="aData.jobtime"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="选择入职时间">
+                      </el-date-picker>
+                    </td>
+                    <td style="font-weight: bolder">班期</td>
+                    <td><el-select
+                      clearable
+                      v-model="aData.className"
+                      placeholder="请选择班期"
+                      maxlength="255">
+                      <el-option
+                        v-for="item in selectOptionsAll"
+                        :key="item.id"
+                        :value="item.className">{{item.className}}
+                      </el-option>
+                    </el-select>
+                    </td>
+                    <td style="font-weight: bolder">部门名称</td>
+                    <td><input type="text" v-model="aData.deptName"></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bolder">职位</td>
+                    <td><input type="text" v-model="aData.job"></td>
+                    <td style="font-weight: bolder">备注</td>
+                    <td colspan="4"><input type="text" v-model="aData.note"></td>
+                  </tr>
+                </table>
+                <br><br>
+                <el-button type="primary" @click="goToSubmit()">提交</el-button>
+              </el-form>
+            </el-dialog>
+            &nbsp;
             <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -136,6 +213,12 @@
         layout="total, prev, pager, next, jumper">
       </el-pagination>
     </div>
+    <el-dialog :visible.sync="multiDeleteVisible" title="提示" width="30%">
+      <span>确定要删除吗</span>
+      <span slot="footer">
+          <el-button type="primary" @click="multiDelete">确 定</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -154,16 +237,25 @@
         pageSize: 5,
         curPage: 1,
         totalStudentsData: [],
+        multiDeleteVisible:false,//批量删除的提示框
         dialogTableVisible: false,//隐藏编辑对话框
+        dialogTableVisible2:false,
         aData: '',
         deptName:'',
         selectOptionsAll: [],
         sName:'all',//对应filters的f1,用于发送axios请求
         dept:'all',
-        jobStr:'all'
+        jobStr:'all',
+        state:'',
+        years:''
       }
     },
     methods: {
+      getClassName(){
+        axios.get('/toGetClassName/').then(res => {
+          this.selectOptionsAll = res.data
+        })
+      },
       checkFilter(){
         if (""!==this.filters.f1){
           this.sName=this.filters.f1
@@ -194,21 +286,105 @@
         })
       },
       refreshList(){
+        this.getClassName();
         this.getStudentsByPage();
         this.getStudentsByLike();
       },
-      handleAdd(index, row){
+      handleAdd(){
         this.$router.push({path: "/addstudent"});
       },
       handleLook(index, row) {
-        console.log(row);
         this.aData = row
       },
       handleEdit(index, row) {
-        // this.$router.push({path: "/update", query: {id: row.id, name: row.username, pwd: row.password}});
+        this.aData = row
       },
+      //单条删除
       handleDelete(index, row) {
-        // this.$router.push({path: "/del", query: {id: params.row.id}})
+        axios.get('/toDelStudent/' + row.stuId).then(res => {
+          if(res.data>0){
+            alert("删除成功")
+            location.reload()
+          }else{
+            alert("删除失败")
+          }
+        })
+      },
+      //批量删除
+      delStudents(){
+        const length = this.multipleSelection.length;
+        let oids = [];
+        for (let i = 0; i < length; i++) {
+          oids.push(this.multipleSelection[i].oid);
+        }
+        axios.get('/toDelStudents/'+oids).then(res=>{
+          if(res.data>0){
+            alert("删除成功");
+          }else{
+            alert("删除失败");
+          }
+        })
+      },
+      goToSubmit(){
+        //计算学生状态
+        if(undefined===this.aData.jobtime||""===this.aData.jobtime){
+          this.state=0;
+          this.aData.jobtime=null
+        }else{
+          let yy = new Date().getFullYear();
+          let mm = new Date().getMonth() + 1;
+          let tJob=this.aData.jobtime.split("-");
+          if((mm-tJob[1])<0){
+            this.years=yy-1-tJob[0];
+            if(this.years<1){
+              this.state=0;
+            }
+            if(this.years<2&&this.years>1){
+              this.state=1;
+            }
+            if(this.years<3&&this.years>2){
+              this.state=2;
+            }
+            if(this.years>3){
+              this.state=3
+            }
+          }else{
+            this.years=yy-tJob[0];
+            if(this.years<1){
+              this.state=0;
+            }
+            if(this.years<2&&this.years>1){
+              this.state=1;
+            }
+            if(this.years<3&&this.years>2){
+              this.state=2;
+            }
+            if(this.years>3){
+              this.state=3
+            }
+          }
+          console.log(this.years)
+          console.log(this.state)
+        }
+        if(undefined===this.aData.deptName||""===this.aData.deptName){
+          this.aData.deptName=null
+        }
+        if(undefined===this.aData.job||""===this.aData.job){
+          this.aData.job=null
+        }
+        if(undefined===this.aData.note||""===this.aData.note){
+          this.aData.note=null
+        }
+        if(undefined===this.aData.photo||""===this.aData.photo){
+          this.aData.photo=null
+        }
+        axios.get('/toUpdateStudent/'+this.aData.stuId+'/'+this.aData.job+'/'+this.aData.jobtime+'/'+this.aData.deptName+'/'+this.aData.state+'/'+this.aData.stuName+'/'+this.aData.sex+'/'+this.aData.nation+'/'+this.aData.birthday
+          +'/'+this.aData.birthplace +'/'+this.aData.marry+'/'+this.aData.telephone+'/'+this.aData.idCard+'/' +this.aData.university +'/'
+          +this.aData.major+'/'+this.aData.photo +'/'+this.aData.note+'/'+this.aData.className).then(res => {
+          if(res.data>0){
+            alert("修改成功")
+          }
+        })
       }
     },
     mounted() {
@@ -222,5 +398,10 @@
     border: 2px solid #cccccc;
     border-collapse: collapse;
     padding-left: 10px;
+  }
+  input{
+    height: 100%;
+    width: 95%;
+    border: none;
   }
 </style>

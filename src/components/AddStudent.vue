@@ -13,7 +13,14 @@
       </tr>
       <tr>
         <td style="font-weight: bolder">出生年月</td>
-        <td><input type="text" v-model="tableData.birthday"></td>
+        <td>
+          <el-date-picker
+            v-model="tableData.birthday"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="选择出生日期">
+          </el-date-picker>
+        </td>
         <td style="font-weight: bolder">籍贯</td>
         <td><input type="text" v-model="tableData.birthplace"></td>
         <td style="font-weight: bolder">婚否</td>
@@ -35,7 +42,17 @@
         <td style="font-weight: bolder">入职时间</td>
         <td></td>
         <td style="font-weight: bolder">班期</td>
-        <td><input type="text" v-model="tableData.className"></td>
+        <td><el-select
+          v-model="tableData.className"
+          placeholder="请选择班期"
+          maxlength="255">
+          <el-option
+            v-for="item in selectOptionsAll"
+            :key="item.id"
+            :value="item.className">{{item.className}}
+          </el-option>
+        </el-select>
+        </td>
         <td style="font-weight: bolder">部门名称</td>
         <td></td>
       </tr>
@@ -48,7 +65,8 @@
     </table>
     <br><br>
     <el-button type="primary" @click="goToSubmit()">提交</el-button>
-    <el-button>重置</el-button>
+    <el-button @click="resetForm()">重置</el-button>
+    <el-button @click="returnList()">返回</el-button>
   </el-form>
 </template>
 
@@ -58,18 +76,25 @@
     name: "AddStudent",
     data() {
       return {
-        tableData: []
+        tableData: [],
+        selectOptionsAll:[]
       }
     },
     methods:{
+      getClassName(){
+        axios.get('/toGetClassName/').then(res => {
+          this.selectOptionsAll = res.data
+        })
+      },
       goToSubmit(){
         console.log(this.tableData.length)
         this.tableData.photo=null;
-        if(undefined===this.tableData.note){
+        if(undefined===this.tableData.note||""===this.tableData.note){
           this.tableData.note=null
         }
         axios.get('/toAddStudent/'+this.tableData.stuName+'/'+this.tableData.sex+'/'+this.tableData.nation+'/'+this.tableData.birthday
-          +'/'+this.tableData.birthplace +'/'+this.tableData.marry+'/'+this.tableData.telephone+'/'+this.tableData.idcard+'/' +this.tableData.university +'/'+this.tableData.major+'/'+this.tableData.photo +'/'+this.tableData.note+'/'+this.tableData.className).then(res => {
+          +'/'+this.tableData.birthplace +'/'+this.tableData.marry+'/'+this.tableData.telephone+'/'+this.tableData.idcard+'/' +this.tableData.university +'/'
+          +this.tableData.major+'/'+this.tableData.photo +'/'+this.tableData.note+'/'+this.tableData.className).then(res => {
           if(res.data){
             alert("新增成功")
             location.reload()
@@ -77,7 +102,16 @@
             alert("新增失败")
           }
         })
+      },
+      resetForm(ruleForm) {
+        location.reload()
+      },
+      returnList(){
+        this.$router.push({path: "/studentInfoList"});
       }
+    },
+    mounted(){
+      this.getClassName()
     }
   }
 </script>
