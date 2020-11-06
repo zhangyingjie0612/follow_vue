@@ -1,9 +1,22 @@
 <template>
-  <div class="tc">
-    <span class="upLoadImgBt">点击上传
-    <input type="file" accept="image/gif,image/jpeg,image/jpg,image/png" @change="changeImage">
-    <img :src="image" class="upLoadImg">
-    </span>
+  <div>
+    <div id="asd">
+      <el-upload
+        class="avatar-uploader"
+        name="picture"
+        action="http://localhost:8080/up/"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload">
+        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
+      <el-button type="primary" @click="multiDelete">确 定</el-button>
+    </div>
+    <!--            action="https://jsonplaceholder.typicode.com/posts/"
+    -->
+    <!--    action="http://localhost:8080/up/"-->
+
   </div>
 </template>
 
@@ -11,54 +24,67 @@
   import axios from 'axios'
   export default {
     name: "Test",
-    data(){
-      return{
-        cacheImg:"",//头像提交本地地址
-        image:"",//图片加载完成地址
-      }
+    data() {
+      return {
+        imageUrl: '',
+        imgPath:''
+      };
     },
-    methods:{
-      //头像提交
-      uploadImg(event){
-        let param = new FormData(); // 创建form对象
-        param.append("image", this.cacheImg);// 通过append向form对象添加数据
-        param.append("v",10);// 添加form表单中其他数据
-        param.append("c",'Bm');// 添加form表单中其他数据
-        param.append("a",'saveImg');// 添加form表单中其他数据
-        console.log(param);
-        console.log(param.get('image')); // FormData可以通过get判断值是否传进去
-        let config = {
-          headers: {'Content-Type': 'multipart/form-data'}
-        }// 添加请求头(如需要更改头部请求)
-        axios.post('/upload/', param, config).then(response => {
-          if (response.data.status==1) {
-            this.image = response.data.data.src;
-            console.log(this.image);
-          }else{
-            //错误提示
-          }
+    methods: {
+      handleAvatarSuccess(res, file) {
+        this.imgPath=file.response
+        this.imageUrl = URL.createObjectURL(file.raw);
+      },
+      multiDelete(){
+        console.log(this.imgPath)
+        axios.get('/savephoto/'+this.imgPath).then(res => {
+          this.empData = res.data;
         })
       },
-      //头像提交完毕后回显
-      changeImage(event) {
-        var files = event.target.files;
-        var reader = new FileReader();
-        reader.addEventListener('load', () => {
-          this.image = reader.result;
-        });
-        reader.readAsDataURL(files[0]);
-        this.cacheImg = files[0];
-        console.log(this.image);
-        console.log(this.cacheImg);
-        this.uploadImg();
-      },
+      beforeAvatarUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
+      }
     }
   }
 </script>
 
 <style scoped>
-  .upLoadImg{display:block;margin:0 auto;max-width:80%;height:auto;background:#99D3F5;color:#1E88C7;}
-  .upLoadImgBt{position:relative;display:block;background:#D0EEFF;border:.1rem solid #99D3F5;border-radius:.5rem;overflow:hidden;color:#1E88C7;font-size:1.4rem;line-height:3.8rem;box-sizing:border-box;}
-  .upLoadImgBt input{position:absolute;right:0;top:0;left:0;bottom:0;opacity:0;display:block;width:100%;}
-
+  .avatar-uploader .el-upload {
+    border: 1px  #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+  #asd{
+    border: 1px dashed #d9d9d9;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+  }
 </style>

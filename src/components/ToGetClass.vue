@@ -20,7 +20,7 @@
               </el-option>
             </el-select>
             <el-button size="small" icon="el-icon-search" circle @click="refreshList()"></el-button>
-            <el-button size="small" type="primary" icon="el-icon-plus" circle @click="dialogTableVisible2=true;handleAdd()"></el-button>
+            <el-button size="small" type="primary" icon="el-icon-plus" circle @click="dialogTableVisible2=true"></el-button>
           </div>
         </template>
         <el-table-column
@@ -62,16 +62,17 @@
             style="width: 250px">
             <el-option
               v-for="item in selectTeacherName"
-              :key="item.id"
-              :value="item.userName">{{item.userName}}
+              :key="item.userId"
+              :label="item.userName"
+              :value="item.userId">{{item.userName}}
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="课程：" :label-width="formLabelWidth">
           <el-checkbox-group
-            v-model="checkedCities"
+            v-model="checkedCourses"
             :max="6">
-            <el-checkbox v-for="city in classesSelection" :label="city" :key="city">{{city}}</el-checkbox>
+            <el-checkbox v-for="course in classesSelection" :label="course" :key="course.courseId" :value="course.courseName">{{course.courseName}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-button size="medium" type="primary" @click="goToSubmit()">提交</el-button>
@@ -99,10 +100,10 @@
           <el-checkbox-group
             v-model="checkedCourses"
             :max="6">
-            <el-checkbox v-for="course in classesSelection" :label="course" :key="course">{{course}}</el-checkbox>
+            <el-checkbox v-for="course in classesSelection" :label="course" :key="course.courseId" :value="course.courseName">{{course.courseName}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-button size="medium" type="primary" @click="goToSubmit()">提交</el-button>
+        <el-button size="medium" type="primary" @click="handleAdd()">提交</el-button>
       </el-form>
     </el-dialog>
     <div>
@@ -141,8 +142,19 @@
         formLabelWidth: '120px',
         nameStr: 'all',//对应filters的f1,用于发送axios请求
         className: 'all',//对应filters的f2,用于发送axios请求
-        checkedCourses: [],//默认已选课程
+        checkedCourses: [],//已选课程
         classesSelection: [],//课程选择范围
+        cId:'',//新增班级返回的班期Id
+        addData:[],//新增班期对应的课程信息的数据
+        addData1:{
+          cId:'',
+          courseId:'',
+        },
+        editData:[],//修改班期对应的课程信息的数据
+        editData1:{
+          cId:'',
+          courseId:'',
+        },
       }
     },
     methods: {
@@ -154,13 +166,14 @@
       getClassName() {
         this.checkFilter2();
         axios.get('/toGetClassName/').then(res => {
-          this.selectOptionsAll = res.data
+          this.selectOptionsAll = res.data;
           this.selectOptionsAll.push({className: "全部列表"})
         })
       },
       getTeacherName() {
         axios.get('/getAllTeacherName/').then(res => {
           this.selectTeacherName = res.data
+          console.log(this.selectTeacherName)
         })
       },
       checkFilter() {
@@ -188,7 +201,6 @@
         this.checkFilter();
         axios.get('/getClassesList/' + this.curPage + '/' + this.pageSize + '/' + this.nameStr + '/' + this.className).then(res => {
           this.tableData = res.data;
-          console.log(this.tableData)
         })
       },
       getClassesNum() {
@@ -198,22 +210,44 @@
         })
       },
       handleEdit(index, row) {
-        this.aData = row
-        // this.userId = row.userId;
-        // axios.get('/gotoResetPwd/' + this.userId).then(res => {
-        //   if (res.data > 0) {
-        //     alert("重置成功")
-        //   } else {
-        //     alert("重置失败")
+        this.aData = row;
+      },
+      goToSubmit(){
+        console.log(this.aData.userName)
+        console.log(this.aData.className,this.aData.userName)
+        // axios.get('/toUpdateClasses/' + this.aData.classId + '/' + this.aData.className+ '/' + this.userId).then(res => {
+        //   if(res.data){
+        //     for(let i=0;i<this.checkedCourses.length;i++){
+        //       this.editData1.cId=this.aData.classId;
+        //       this.editData1.courseId=this.checkedCourses[i].courseId;
+        //       this.editData.push(this.editData1)
+        //     }
+        //     // axios.post('/toAddClassCourse/',this.editData).then(res => {
+        //     //   if(res.data){
+        //     //     alert("修改成功")
+        //     //   }else{
+        //     //     alert("修改失败")
+        //     //   }
+        //     // })
         //   }
-        //   location.reload()
         // })
       },
       handleAdd() {
-        // this.$router.push({path: "/addstudent"});
-      },
-      goToSubmit() {
-
+        axios.get('/toAddClass/' + this.className + '/' + this.userId).then(res => {
+          this.cId=res.data;
+          for(let i=0;i<this.checkedCourses.length;i++){
+            this.addData1.cId=this.cId;
+            this.addData1.courseId=this.checkedCourses[i].courseId;
+            this.addData.push(this.addData1)
+          }
+          axios.post('/toAddClassCourse/',this.addData).then(res => {
+            if(res.data){
+              alert("新增成功")
+            }else{
+              alert("新增失败")
+            }
+          })
+        })
       }
     },
     mounted() {
