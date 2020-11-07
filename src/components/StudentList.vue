@@ -39,7 +39,7 @@
         <el-table-column
           prop="university"
           label="毕业院校"
-          width="150">
+          width="140">
         </el-table-column>
         <el-table-column
           prop="birthplace"
@@ -47,36 +47,14 @@
           width="100">
         </el-table-column>
         <el-table-column label="培训期间测试成绩" align="center">
-          <el-table-column
-            prop="z1"
-            label="HTML"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="z2"
-            label="oracle"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="z3"
-            label="java基础"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="z4"
-            label="java高级"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="z5"
-            label="js"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="z6"
-            label="L1面试"
-            width="80">
-          </el-table-column>
+          <template  v-for='(one) in scoreData'>
+            <el-table-column
+              :prop="'z'+one.prop"
+              :label="one.label"
+              :key="'z'+one.prop"
+              width="80px">
+            </el-table-column>
+          </template>
         </el-table-column>
         <el-table-column
           prop="evlcontent"
@@ -130,37 +108,47 @@
           f2:""
         },
         tableData: [],
-        pageSize: 5,
+        pageSize: 10,
         curPage: 1,
         totalStudentsData: [],
         selectOptionsAll:[],
         className:'all',
-        nameStr:'all'//对应filters的f1,用于发送axios请求
+        nameStr:'all',//对应filters的f1,用于发送axios请求
+        scoreData:'',
       }
     },
     methods: {
+      /*获取课程名和课程id，发送班级、姓名*/
+      getCourse(){
+        this.checkFilter2();
+        axios.get("/toDoGetAllCourses/" + this.className).then(res=>{
+          this.scoreData=res.data
+        })
+      },
       getClassName(){
         this.checkFilter2();
         axios.get('/toGetClassName/').then(res => {
           this.selectOptionsAll = res.data
-          this.selectOptionsAll.push({className:"全部列表"})
         })
       },
       checkFilter(){
         if (""!==this.filters.f1){
           this.nameStr=this.filters.f1
-        }else {
+        }else{
           this.nameStr="all"
         }
       },
       checkFilter2(){
-        if (""!==this.filters.f2&&this.filters.f2!=="全部列表"){
+        if (""!==this.filters.f2){
           this.className=this.filters.f2
+        }else if(""===this.filters.f2){
+          this.className="金桥工程47期"
         }else {
           this.className="all"
         }
       },
       refreshList(){
+        this.getCourse();
         this.getClassName();
         this.getStudents();
         this.getStudents2();
@@ -204,13 +192,16 @@
             if (this.tableData[i].z6 == null) (
               this.tableData[i].z6="未录入"
             )
+            if (this.tableData[i].z7 == null) (
+              this.tableData[i].z7="未录入"
+            )
           }
         })
       },
       //获取所有列表来求个数
       getStudents2() {
         this.checkFilter();
-        axios.get('/getStudentList2/'+ '/' + this.nameStr+'/'+this.className).then(res => {
+        axios.get('/getStudentList2/'+ this.nameStr+'/'+this.className).then(res => {
           this.totalStudentsData = res.data
         })
       }

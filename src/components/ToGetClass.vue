@@ -49,9 +49,9 @@
         </el-table-column>
       </el-table-column>
     </el-table>
-<!--    编辑弹框-->
+    <!--    编辑弹框-->
     <el-dialog title="编辑班期信息" :visible.sync="dialogTableVisible" width="600px" height="500px">
-      <el-form :data="tableData">
+      <el-form :data="aData">
         <el-form-item label="班期：" :label-width="formLabelWidth">
           <el-input v-model="aData.className" autocomplete="off" style="width: 250px"></el-input>
         </el-form-item>
@@ -64,7 +64,7 @@
               v-for="item in selectTeacherName"
               :key="item.userId"
               :label="item.userName"
-              :value="item.userId">{{item.userName}}
+              :value="item.userName">{{item.userName}}
             </el-option>
           </el-select>
         </el-form-item>
@@ -78,27 +78,27 @@
         <el-button size="medium" type="primary" @click="goToSubmit()">提交</el-button>
       </el-form>
     </el-dialog>
-<!--    新增弹框-->
-    <el-dialog title="编辑班期信息" :visible.sync="dialogTableVisible2" width="600px" height="500px">
-      <el-form :data="tableData">
+    <!--    新增弹框-->
+    <el-dialog title="新增班期信息" :visible.sync="dialogTableVisible2" width="600px" height="500px">
+      <el-form :data="aData1">
         <el-form-item label="班期：" :label-width="formLabelWidth">
-          <el-input v-model="aData.className" autocomplete="off" style="width: 250px"></el-input>
+          <el-input v-model="aData1.className" autocomplete="off" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="授课教师：" :label-width="formLabelWidth">
           <el-select
-            v-model="aData.userName"
+            v-model="aData1.userName"
             placeholder="请选择授课老师"
             style="width: 250px">
             <el-option
               v-for="item in selectTeacherName"
-              :key="item.id"
+              :key="item.userId"
               :value="item.userName">{{item.userName}}
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="课程：" :label-width="formLabelWidth">
           <el-checkbox-group
-            v-model="checkedCourses"
+            v-model="checkedCourses2"
             :max="6">
             <el-checkbox v-for="course in classesSelection" :label="course" :key="course.courseId" :value="course.courseName">{{course.courseName}}</el-checkbox>
           </el-checkbox-group>
@@ -134,6 +134,10 @@
         },
         tableData: [],
         aData: '',
+        aData1: {
+          className:'',
+          userName:''
+        },
         totalClassesData: [],
         selectOptionsAll: [],//所有的班期
         selectTeacherName: [],//所有的教师姓名
@@ -143,6 +147,7 @@
         nameStr: 'all',//对应filters的f1,用于发送axios请求
         className: 'all',//对应filters的f2,用于发送axios请求
         checkedCourses: [],//已选课程
+        checkedCourses2: [],//新增的已选课程
         classesSelection: [],//课程选择范围
         cId:'',//新增班级返回的班期Id
         addData:[],//新增班期对应的课程信息的数据
@@ -210,11 +215,22 @@
         })
       },
       handleEdit(index, row) {
+        console.log(row)
         this.aData = row;
+
+        // this.aData.userName = row.userName;
+        // this.aData.userId = row.userId;
       },
       goToSubmit(){
         console.log(this.aData.userName)
-        console.log(this.aData.className,this.aData.userName)
+        // console.log(this.aData.className,this.aData.userName)
+        for(let i=0;i<this.selectTeacherName.length;i++){
+          if (this.selectTeacherName[i].userName==this.aData.userName){
+            this.aData.userId=this.selectTeacherName[i].userId
+          }
+        }
+        console.log(this.aData.className,this.aData.userName,this.aData.userId)
+
         // axios.get('/toUpdateClasses/' + this.aData.classId + '/' + this.aData.className+ '/' + this.userId).then(res => {
         //   if(res.data){
         //     for(let i=0;i<this.checkedCourses.length;i++){
@@ -233,11 +249,16 @@
         // })
       },
       handleAdd() {
+        for(let i=0;i<this.selectTeacherName.length;i++){
+          if (this.selectTeacherName[i].userName==this.aData.userName){
+            this.aData.userId=this.selectTeacherName[i].userId
+          }
+        }
         axios.get('/toAddClass/' + this.className + '/' + this.userId).then(res => {
           this.cId=res.data;
-          for(let i=0;i<this.checkedCourses.length;i++){
+          for(let i=0;i<this.checkedCourses2.length;i++){
             this.addData1.cId=this.cId;
-            this.addData1.courseId=this.checkedCourses[i].courseId;
+            this.addData1.courseId=this.checkedCourses2[i].courseId;
             this.addData.push(this.addData1)
           }
           axios.post('/toAddClassCourse/',this.addData).then(res => {

@@ -90,7 +90,7 @@
                   <td width="200">{{aData.sex}}</td>
                   <td style="font-weight: bolder;width: 200px">民族</td>
                   <td width="200">{{aData.nation}}</td>
-                  <td rowspan="5" width="300px"></td>
+                  <td rowspan="5" width="300px"><img  v-if="aData.photo" :src="aData.photo" class="avatar"></td>
                 </tr>
                 <tr>
                   <td style="font-weight: bolder">出生年月</td>
@@ -138,7 +138,20 @@
                     <td width="200"><input type="text" v-model="aData.sex"></td>
                     <td style="font-weight: bolder;width: 120px">民族</td>
                     <td width="200"><input type="text" v-model="aData.nation"></td>
-                    <td rowspan="5" width="300px"><el-button type="primary" style="margin-left: 70px">上传图片</el-button></td>
+                    <td rowspan="5" width="300px">
+                      <div class="photo">
+                        <el-upload
+                          class="avatar-uploader"
+                          name="picture"
+                          action="http://localhost:8080/up/"
+                          :show-file-list="false"
+                          :on-success="handleAvatarSuccess"
+                          :before-upload="beforeAvatarUpload">
+                          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                        </el-upload>
+                      </div>
+                    </td>
                   </tr>
                   <tr>
                     <td style="font-weight: bolder">出生年月</td>
@@ -249,6 +262,8 @@
         sName:'all',//对应filters的f1,用于发送axios请求
         dept:'all',
         jobStr:'all',
+        imageUrl: '',
+        imgPath: '',
         updateData:{
           stuId:'',
           stuName:'',
@@ -318,8 +333,24 @@
       handleLook(index, row) {
         this.aData = row
       },
-      handleEdit(index, row) {
-        this.aData = row
+      //  图片上传
+      handleAvatarSuccess(res, file) {
+        this.imageUrl = URL.createObjectURL(file.raw);
+        this.imgPath=file.response
+        console.log(file)
+        console.log(this.imgPath)
+      },
+      beforeAvatarUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
       },
       //单条删除
       handleDelete(index, row) {
@@ -353,8 +384,13 @@
           }
         })
       },
+      handleEdit(index, row) {
+        this.aData = row
+        this.imageUrl=this.aData.photo
+      },
       goToSubmit(){
         this.updateData=this.aData
+        this.updateData.photo=this.imgPath
         //计算学生状态
         if(undefined===this.aData.jobtime||""===this.aData.jobtime){
           this.updateData.state=0;
@@ -420,5 +456,37 @@
     height: 100%;
     width: 95%;
     border: none;
+  }
+  .avatar-uploader .el-upload {
+    border: 1px dashed #409EFF;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 50px;
+    color: #8c939d;
+    width: 230px;
+    height: 230px;
+    line-height: 230px;
+    text-align: center;
+    margin-top: 30px;
+  }
+  .avatar {
+    width: 230px;
+    height: 230px;
+    display: block;
+  }
+  .photo{
+    position: relative;
+    border: 1px dashed #d9d9d9;
+    width: 230px;
+    height: 300px;
+    line-height: 230px;
+    margin-left: 20px;
   }
 </style>
