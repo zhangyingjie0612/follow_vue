@@ -137,7 +137,8 @@
         aData: '',
         aData1: {
           className:'',
-          userName:''
+          userName:'',
+          userId:''
         },
         totalClassesData: [],
         selectOptionsAll: [],//所有的班期
@@ -152,10 +153,7 @@
         coursesSelection: [],//课程选择范围
         cId:'',//新增班级返回的班期Id
         addData:[],//新增班期对应的课程信息的数据
-        addData1:{
-          cId:'',
-          courseId:'',
-        },
+        addData1:[],
         editData:[],//修改班期对应的课程信息的数据
         editData1:[],
         maxClassId:'',
@@ -258,18 +256,22 @@
       },
       handleAdd() {
         for(let i=0;i<this.selectTeacherName.length;i++){
-          if (this.selectTeacherName[i].userName==this.aData.userName){
-            this.aData.userId=this.selectTeacherName[i].userId
+          if (this.selectTeacherName[i].userName==this.aData1.userName){
+            this.aData1.userId=this.selectTeacherName[i].userId
           }
         }
-        axios.get('/toAddClass/' + this.className + '/' + this.userId).then(res => {
+        console.log(this.addClassName,this.aData1.userId)
+        axios.get('/toAddClass/' + this.addClassName + '/' + this.aData1.userId).then(res => {
           this.cId=res.data;
-          for(let i=0;i<this.checkedCourses2.length;i++){
-            this.addData1.cId=this.cId;
-            this.addData1.courseId=this.checkedCourses2[i].courseId;
-            this.addData.push(this.addData1)
+          for(let i in this.checkedCourses2){
+            for (let j in this.coursesSelection) {
+              if (this.checkedCourses2[i]==this.coursesSelection[j].courseName){
+                this.addData[i] = JSON.parse(JSON.stringify({classId:this.cId,courseId:this.coursesSelection[j].courseId}));
+              }
+            }
           }
-          axios.post('/toAddClassCourse/',this.addData).then(res => {
+          this.addData1=JSON.stringify(this.addData)
+          axios.post('/toAddClassCourse/',this.addData1).then(res => {
             if(res.data){
               alert("新增成功")
             }else{

@@ -1,5 +1,5 @@
 <template>
-  <el-form action="" style="margin-top: 20px" >
+  <el-form action="" style="margin-top: 20px">
     <table style="width: 1200px;height: 600px" align="center" :data="tableData">
       <tr><td colspan="4" style="font-size: x-large;font-weight: bolder">新增学生信息</td></tr>
       <br><br>
@@ -157,7 +157,7 @@
           className:'',
           deptName:'',
           job:'',
-          jobtime:''
+          jobtime:'',
         },
       }
     },
