@@ -1,14 +1,25 @@
 <template>
-  <el-form action="" style="margin-top: 20px">
+  <el-form action="" style="margin-top: 20px" >
     <table style="width: 1200px;height: 600px" align="center" :data="tableData">
-      <tr><td colspan="7" style="font-size: x-large;font-weight: bolder">新增学生信息</td></tr>
+      <tr><td colspan="4" style="font-size: x-large;font-weight: bolder">新增学生信息</td></tr>
+      <br><br>
       <tr>
-        <td style="font-weight: bolder;width: 120px">姓名</td>
-        <td width="200"><input type="text" v-model="tableData.stuName"></td>
-        <td style="font-weight: bolder;width: 200px">性别</td>
-        <td width="200"><input type="text" v-model="tableData.sex"></td>
-        <td style="font-weight: bolder;width: 200px">民族</td>
-        <td width="200"><input type="text" v-model="tableData.nation"></td>
+        <td>
+          <el-form-item label="姓名" :label-width="formLabelWidth" :required="true">
+            <el-input v-model="tableData.stuName" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </td>
+        <td>
+          <el-form-item label="性别" :label-width="formLabelWidth" :required="true">
+            <el-radio v-model="tableData.sex" label="男">男</el-radio>
+            <el-radio v-model="tableData.sex" label="女">女</el-radio>
+          </el-form-item>
+        </td>
+        <td>
+          <el-form-item label="民族" :label-width="formLabelWidth" :required="true">
+            <el-input v-model="tableData.nation" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </td>
         <td rowspan="5" width="300px">
           <div class="photo">
             <el-upload
@@ -25,55 +36,89 @@
         </td>
       </tr>
       <tr>
-        <td style="font-weight: bolder">出生年月</td>
         <td>
-          <el-date-picker
-            v-model="tableData.birthday"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="选择出生日期">
-          </el-date-picker>
+          <el-form-item label="出生年月" :label-width="formLabelWidth" :required="true">
+            <el-date-picker
+              v-model="tableData.birthday"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="选择出生日期">
+            </el-date-picker>
+          </el-form-item>
         </td>
-        <td style="font-weight: bolder">籍贯</td>
-        <td><input type="text" v-model="tableData.birthplace"></td>
-        <td style="font-weight: bolder">婚否</td>
-        <td><input type="text" v-model="tableData.marry"></td>
-      </tr>
-      <tr>
-        <td style="font-weight: bolder">联系电话</td>
-        <td><input type="text" v-model="tableData.telephone"></td>
-        <td style="font-weight: bolder">身份证号码</td>
-        <td colspan="3"><input type="text" v-model="tableData.idcard"></td>
-      </tr>
-      <tr>
-        <td style="font-weight: bolder">毕业院校</td>
-        <td><input type="text" v-model="tableData.university"></td>
-        <td style="font-weight: bolder">专业</td>
-        <td colspan="3"><input type="text" v-model="tableData.major"></td>
-      </tr>
-      <tr>
-        <td style="font-weight: bolder">入职时间</td>
-        <td></td>
-        <td style="font-weight: bolder">班期</td>
-        <td><el-select
-          v-model="tableData.className"
-          placeholder="请选择班期"
-          maxlength="255">
-          <el-option
-            v-for="item in selectOptionsAll"
-            :key="item.id"
-            :value="item.className">{{item.className}}
-          </el-option>
-        </el-select>
+        <td>
+          <el-form-item label="籍贯" :label-width="formLabelWidth" :required="true">
+            <el-input v-model="tableData.birthplace" placeholder="请输入内容"></el-input>
+          </el-form-item>
         </td>
-        <td style="font-weight: bolder">部门名称</td>
-        <td></td>
+        <td>
+          <el-form-item label="婚否" :label-width="formLabelWidth" :required="true">
+            <el-radio v-model="tableData.marry" label="未婚">未婚</el-radio>
+            <el-radio v-model="tableData.marry" label="已婚">已婚</el-radio>
+          </el-form-item>
+        </td>
       </tr>
       <tr>
-        <td style="font-weight: bolder">职位</td>
-        <td></td>
-        <td style="font-weight: bolder">备注</td>
-        <td colspan="4"><input type="text" v-model="tableData.note"></td>
+        <td>
+          <el-form-item label="联系电话" :label-width="formLabelWidth" :required="true">
+            <el-input v-model="tableData.telephone" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </td>
+        <td>
+          <el-form-item label="身份证号码" :label-width="formLabelWidth" :required="true">
+            <el-input v-model="tableData.idcard" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </td>
+        <td>
+          <el-form-item label="毕业院校" :label-width="formLabelWidth" :required="true">
+            <el-input v-model="tableData.university" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <el-form-item label="专业" :label-width="formLabelWidth" :required="true">
+            <el-input v-model="tableData.major" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </td>
+        <td>
+          <el-form-item label="入职时间" :label-width="formLabelWidth">
+            <el-input :disabled="true"></el-input>
+          </el-form-item>
+        </td>
+        <td>
+          <el-form-item label="班期" :label-width="formLabelWidth" :required="true">
+            <el-select
+              v-model="tableData.className"
+              placeholder="请选择班期"
+              maxlength="255">
+              <el-option
+                v-for="item in selectOptionsAll"
+                :key="item.id"
+                :value="item.className">{{item.className}}
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <el-form-item label="部门名称" :label-width="formLabelWidth">
+            <el-input :disabled="true"></el-input>
+          </el-form-item>
+        </td>
+        <td colspan="2">
+          <el-form-item label="职位" :label-width="formLabelWidth">
+            <el-input :disabled="true"></el-input>
+          </el-form-item>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <el-form-item label="备注" :label-width="formLabelWidth">
+            <el-input v-model="tableData.note"></el-input>
+          </el-form-item>
+        </td>
       </tr>
     </table>
     <br><br>
@@ -89,6 +134,7 @@
     name: "AddStudent",
     data() {
       return {
+        formLabelWidth:"100px",
         tableData: [],
         selectOptionsAll:[],
         imageUrl: '',
@@ -171,16 +217,6 @@
 </script>
 
 <style scoped>
-  table, td {
-    border: 2px solid #cccccc;
-    border-collapse: collapse;
-    padding-left: 10px;
-  }
-  input{
-    height: 100%;
-    width: 95%;
-    border: none;
-  }
   .avatar-uploader .el-upload {
     border: 1px dashed #409EFF;
     border-radius: 6px;
@@ -211,6 +247,6 @@
     width: 230px;
     height: 300px;
     line-height: 230px;
-    margin-left: 20px;
+    margin-left: 60px;
   }
 </style>

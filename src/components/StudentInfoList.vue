@@ -13,18 +13,6 @@
             <el-input placeholder="输入姓名" v-model="filters.f1" style="width: 200px"></el-input>
             <el-input placeholder="输入部门名称" v-model="filters.f2" style="width: 200px"></el-input>
             <el-input placeholder="输入职位" v-model="filters.f3" style="width: 200px"></el-input>
-<!--            <el-select-->
-<!--              v-model="deptName"-->
-<!--              placeholder="请在下拉框中选择名称"-->
-<!--              maxlength="255"-->
-<!--              :disabled="false"-->
-<!--              clearable>-->
-<!--              <el-option-->
-<!--                v-for="item in selectOptionsAll"-->
-<!--                :key="item.id"-->
-<!--                :value="item.deptName">{{item.deptName}}-->
-<!--              </el-option>-->
-<!--            </el-select>-->
             <el-button size="small" icon="el-icon-search" circle @click="refreshList()"></el-button>
             <el-button size="small" type="primary" icon="el-icon-plus" circle @click="handleAdd()"></el-button>
             <el-button size="small" type="danger" icon="el-icon-delete" circle @click="multiDeleteVisible=true"></el-button>
@@ -135,7 +123,10 @@
                     <td style="font-weight: bolder;width: 120px">姓名</td>
                     <td width="200"><input type="text" v-model="aData.stuName"></td>
                     <td style="font-weight: bolder;width: 120px">性别</td>
-                    <td width="200"><input type="text" v-model="aData.sex"></td>
+                    <td width="200">
+                      <el-radio v-model="aData.sex" label="男">男</el-radio>
+                      <el-radio v-model="aData.sex" label="女">女</el-radio>
+                    </td>
                     <td style="font-weight: bolder;width: 120px">民族</td>
                     <td width="200"><input type="text" v-model="aData.nation"></td>
                     <td rowspan="5" width="300px">
@@ -166,7 +157,10 @@
                     <td style="font-weight: bolder">籍贯</td>
                     <td><input type="text" v-model="aData.birthplace"></td>
                     <td style="font-weight: bolder">婚否</td>
-                    <td><input type="text" v-model="aData.marry"></td>
+                    <td>
+                      <el-radio v-model="aData.marry" label="未婚">未婚</el-radio>
+                      <el-radio v-model="aData.marry" label="已婚">已婚</el-radio>
+                    </td>
                   </tr>
                   <tr>
                     <td style="font-weight: bolder">联系电话</td>

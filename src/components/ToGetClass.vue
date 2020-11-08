@@ -53,7 +53,7 @@
     <el-dialog title="编辑班期信息" :visible.sync="dialogTableVisible" width="600px" height="500px">
       <el-form :data="aData">
         <el-form-item label="班期：" :label-width="formLabelWidth">
-          <el-input v-model="aData.className" autocomplete="off" style="width: 250px"></el-input>
+          <el-input v-model="aData.className" autocomplete="off" style="width: 250px" :readonly="true"></el-input>
         </el-form-item>
         <el-form-item label="授课教师：" :label-width="formLabelWidth">
           <el-select
@@ -71,8 +71,9 @@
         <el-form-item label="课程：" :label-width="formLabelWidth">
           <el-checkbox-group
             v-model="checkedCourses"
+            :min="1"
             :max="6">
-            <el-checkbox v-for="course in classesSelection" :label="course" :key="course.courseId" :value="course.courseName">{{course.courseName}}</el-checkbox>
+            <el-checkbox v-for="course in coursesSelection" :label="course.courseName" :key="course.courseName" :value="course.courseName">{{course.courseName}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-button size="medium" type="primary" @click="goToSubmit()">提交</el-button>
@@ -82,7 +83,7 @@
     <el-dialog title="新增班期信息" :visible.sync="dialogTableVisible2" width="600px" height="500px">
       <el-form :data="aData1">
         <el-form-item label="班期：" :label-width="formLabelWidth">
-          <el-input v-model="aData1.className" autocomplete="off" style="width: 250px"></el-input>
+          <el-input v-model="addClassName" autocomplete="off" style="width: 250px" :readonly="true"></el-input>
         </el-form-item>
         <el-form-item label="授课教师：" :label-width="formLabelWidth">
           <el-select
@@ -100,7 +101,7 @@
           <el-checkbox-group
             v-model="checkedCourses2"
             :max="6">
-            <el-checkbox v-for="course in classesSelection" :label="course" :key="course.courseId" :value="course.courseName">{{course.courseName}}</el-checkbox>
+            <el-checkbox v-for="course in coursesSelection" :label="course.courseName" :key="course.courseName" :value="course.courseName">{{course.courseName}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-button size="medium" type="primary" @click="handleAdd()">提交</el-button>
@@ -148,7 +149,7 @@
         className: 'all',//对应filters的f2,用于发送axios请求
         checkedCourses: [],//已选课程
         checkedCourses2: [],//新增的已选课程
-        classesSelection: [],//课程选择范围
+        coursesSelection: [],//课程选择范围
         cId:'',//新增班级返回的班期Id
         addData:[],//新增班期对应的课程信息的数据
         addData1:{
@@ -156,16 +157,22 @@
           courseId:'',
         },
         editData:[],//修改班期对应的课程信息的数据
-        editData1:{
-          cId:'',
-          courseId:'',
-        },
+        editData1:[],
+        maxClassId:'',
+        addClassName:'',
       }
     },
     methods: {
+      getMaxClassId(){
+        axios.get('/toGetMaxClassId/').then(res => {
+          this.maxClassId = res.data;
+          let cla=this.maxClassId+47;
+          this.addClassName="金桥工程"+cla+"期";
+        })
+      },
       getCourseName(){
         axios.get('/getAllCourseName/').then(res => {
-          this.classesSelection = res.data
+          this.coursesSelection = res.data
         })
       },
       getClassName() {
@@ -178,7 +185,6 @@
       getTeacherName() {
         axios.get('/getAllTeacherName/').then(res => {
           this.selectTeacherName = res.data
-          console.log(this.selectTeacherName)
         })
       },
       checkFilter() {
@@ -196,6 +202,7 @@
         }
       },
       refreshList() {
+        this.getMaxClassId();
         this.getCourseName();
         this.getTeacherName();
         this.getClassName();
@@ -215,38 +222,39 @@
         })
       },
       handleEdit(index, row) {
-        console.log(row)
         this.aData = row;
-
-        // this.aData.userName = row.userName;
-        // this.aData.userId = row.userId;
+        axios.get('/toGetSelectedCourse/' + this.aData.className).then(res => {
+          this.checkedCourses=res.data
+        });
       },
       goToSubmit(){
-        console.log(this.aData.userName)
-        // console.log(this.aData.className,this.aData.userName)
+        //遍历教师姓名和教师id，根据教师姓名匹配教师Id
         for(let i=0;i<this.selectTeacherName.length;i++){
           if (this.selectTeacherName[i].userName==this.aData.userName){
             this.aData.userId=this.selectTeacherName[i].userId
           }
         }
-        console.log(this.aData.className,this.aData.userName,this.aData.userId)
-
-        // axios.get('/toUpdateClasses/' + this.aData.classId + '/' + this.aData.className+ '/' + this.userId).then(res => {
-        //   if(res.data){
-        //     for(let i=0;i<this.checkedCourses.length;i++){
-        //       this.editData1.cId=this.aData.classId;
-        //       this.editData1.courseId=this.checkedCourses[i].courseId;
-        //       this.editData.push(this.editData1)
-        //     }
-        //     // axios.post('/toAddClassCourse/',this.editData).then(res => {
-        //     //   if(res.data){
-        //     //     alert("修改成功")
-        //     //   }else{
-        //     //     alert("修改失败")
-        //     //   }
-        //     // })
-        //   }
-        // })
+        for(let i in this.checkedCourses){
+          for (let j in this.coursesSelection) {
+            if (this.checkedCourses[i]==this.coursesSelection[j].courseName){
+              this.editData[i] = JSON.parse(JSON.stringify({classId:this.aData.classId,courseId:this.coursesSelection[j].courseId}));
+            }
+          }
+        }
+        this.editData1=JSON.stringify(this.editData)
+        console.log(this.editData)
+        console.log(this.editData1)
+        axios.get('/toUpdateClasses/' + this.aData.classId + '/' + this.aData.className+ '/' + this.aData.userId).then(res => {
+          if(res.data){
+            axios.post('/toAddClassCourse/',this.editData1).then(res => {
+              if(res.data){
+                alert("修改成功")
+              }else{
+                alert("修改失败")
+              }
+            })
+          }
+        })
       },
       handleAdd() {
         for(let i=0;i<this.selectTeacherName.length;i++){
