@@ -1,8 +1,7 @@
 <template>
-  <el-form action="" style="margin-top: 20px">
+  <el-form style="margin-top: 20px">
     <table style="width: 1200px;height: 600px" align="center" :data="tableData">
-      <tr><td colspan="4" style="font-size: x-large;font-weight: bolder">新增学生信息</td></tr>
-      <br><br>
+      <tr><td colspan="4" style="font-size: x-large;font-weight: bolder;height: 80px">新增学生信息</td></tr>
       <tr>
         <td>
           <el-form-item label="姓名" :label-width="formLabelWidth" :required="true">
@@ -25,7 +24,7 @@
             <el-upload
               class="avatar-uploader"
               name="picture"
-              action="http://localhost:8080/up/"
+              action="http://localhost:8080/upload/"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload">
@@ -157,7 +156,7 @@
           className:'',
           deptName:'',
           job:'',
-          jobtime:'',
+          jobtime:''
         },
       }
     },
@@ -231,21 +230,21 @@
     font-size: 50px;
     color: #8c939d;
     width: 230px;
-    height: 230px;
+    height: 280px;
     line-height: 230px;
     text-align: center;
     margin-top: 30px;
   }
   .avatar {
     width: 230px;
-    height: 230px;
+    height: 280px;
     display: block;
   }
   .photo{
     position: relative;
     border: 1px dashed #d9d9d9;
     width: 230px;
-    height: 300px;
+    height: 280px;
     line-height: 230px;
     margin-left: 60px;
   }

@@ -239,7 +239,7 @@
             }
           }
         }
-        this.editData1=JSON.stringify(this.editData)
+        this.editData1=this.editData
         console.log(this.editData)
         console.log(this.editData1)
         axios.get('/toUpdateClasses/' + this.aData.classId + '/' + this.aData.className+ '/' + this.aData.userId).then(res => {
@@ -270,7 +270,7 @@
               }
             }
           }
-          this.addData1=JSON.stringify(this.addData)
+          this.addData1=this.addData
           axios.post('/toAddClassCourse/',this.addData1).then(res => {
             if(res.data){
               alert("新增成功")

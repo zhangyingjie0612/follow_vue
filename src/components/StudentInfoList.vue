@@ -74,11 +74,11 @@
                 <tr>
                   <td style="font-weight: bolder;width: 120px">姓名</td>
                   <td width="200">{{aData.stuName}}</td>
-                  <td style="font-weight: bolder;width: 200px">性别</td>
+                  <td style="font-weight: bolder;width: 130px">性别</td>
                   <td width="200">{{aData.sex}}</td>
-                  <td style="font-weight: bolder;width: 200px">民族</td>
+                  <td style="font-weight: bolder;width: 130px">民族</td>
                   <td width="200">{{aData.nation}}</td>
-                  <td rowspan="5" width="300px"><img  v-if="aData.photo" :src="aData.photo" class="avatar"></td>
+                  <td rowspan="5" width="255px"><img  v-if="aData.photo" :src="aData.photo" class="avatar"></td>
                 </tr>
                 <tr>
                   <td style="font-weight: bolder">出生年月</td>
@@ -109,8 +109,10 @@
                   <td>{{aData.deptname}}</td>
                 </tr>
                 <tr>
+                  <td style="font-weight: bolder">职位</td>
+                  <td>{{aData.job}}</td>
                   <td style="font-weight: bolder">备注</td>
-                  <td colspan="6">{{aData.note}}</td>
+                  <td colspan="4">{{aData.note}}</td>
                 </tr>
               </table>
             </el-dialog>
@@ -134,7 +136,7 @@
                         <el-upload
                           class="avatar-uploader"
                           name="picture"
-                          action="http://localhost:8080/up/"
+                          action="http://localhost:8080/upload/"
                           :show-file-list="false"
                           :on-success="handleAvatarSuccess"
                           :before-upload="beforeAvatarUpload">
@@ -243,7 +245,7 @@
           f3:""
         },
         tableData: [],
-        pageSize: 5,
+        pageSize: 8,
         curPage: 1,
         totalStudentsData: [],
         multipleSelection:[],//批量删除选择的复选框数组
@@ -465,21 +467,21 @@
     font-size: 50px;
     color: #8c939d;
     width: 230px;
-    height: 230px;
+    height: 280px;
     line-height: 230px;
     text-align: center;
     margin-top: 30px;
   }
   .avatar {
     width: 230px;
-    height: 230px;
+    height: 280px;
     display: block;
   }
   .photo{
     position: relative;
     border: 1px dashed #d9d9d9;
     width: 230px;
-    height: 300px;
+    height: 280px;
     line-height: 230px;
     margin-left: 20px;
   }
