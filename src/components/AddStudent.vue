@@ -170,13 +170,10 @@
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
         this.imgPath=file.response
-        console.log(file)
-        console.log(this.imgPath)
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
         const isLt2M = file.size / 1024 / 1024 < 2;
-
         if (!isJPG) {
           this.$message.error('上传头像图片只能是 JPG 格式!');
         }
@@ -186,7 +183,6 @@
         return isJPG && isLt2M;
       },
       goToSubmit(){
-        console.log(this.tableData.length)
         this.tableData.photo=this.imgPath
         if(undefined===this.tableData.note||""===this.tableData.note){
           this.tableData.note=null

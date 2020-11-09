@@ -250,8 +250,8 @@
         totalStudentsData: [],
         multipleSelection:[],//批量删除选择的复选框数组
         multiDeleteVisible:false,//批量删除的提示框
-        dialogTableVisible: false,//隐藏编辑对话框
-        dialogTableVisible2:false,
+        dialogTableVisible: false,//查看
+        dialogTableVisible2:false,//隐藏编辑对话框
         aData: '',
         deptName:'',
         selectOptionsAll: [],
@@ -429,9 +429,16 @@
         }
         axios.post('/toUpdateStudent/',this.updateData).then(res => {
           if(res.data>0){
-            alert("修改成功")
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            });
+            this.dialogTableVisible2=false
           }else{
-            alert("修改失败")
+            this.$message({
+              message: '修改失败',
+              type: 'warning'
+            });
           }
         })
       }

@@ -246,9 +246,16 @@
           if(res.data){
             axios.post('/toAddClassCourse/',this.editData1).then(res => {
               if(res.data){
-                alert("修改成功")
+                this.$message({
+                  message: '修改成功',
+                  type: 'success'
+                });
+                this.dialogTableVisible = false;
               }else{
-                alert("修改失败")
+                this.$message({
+                  message: '修改失败',
+                  type: 'warning'
+                });
               }
             })
           }
@@ -273,9 +280,16 @@
           this.addData1=this.addData
           axios.post('/toAddClassCourse/',this.addData1).then(res => {
             if(res.data){
-              alert("新增成功")
+              this.$message({
+                message: '新增成功',
+                type: 'success'
+              });
+              this.dialogTableVisible2 = false;
             }else{
-              alert("新增失败")
+              this.$message({
+                message: '新增失败',
+                type: 'warning'
+              });
             }
           })
         })
