@@ -2,7 +2,8 @@
   <div>
     <el-table
       :data="tableData"
-      style="width: 1330px;margin-left: 95px;height: 650px;margin-top: 30px">
+      style="width: 1330px;margin-left: 95px;height: 650px;margin-top: 30px"
+      align="center">
       <el-table-column>
         <template slot="header" slot-scope="scope">
           <span style="font-size: x-large">学员跟踪表</span>

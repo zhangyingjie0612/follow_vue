@@ -200,7 +200,19 @@
                     </el-select>
                     </td>
                     <td style="font-weight: bolder">部门名称</td>
-                    <td><input type="text" v-model="aData.deptName"></td>
+                    <td>
+                      <el-select
+                        clearable
+                        v-model="aData.deptName"
+                        placeholder="请选择班期"
+                        maxlength="255">
+                        <el-option
+                          v-for="item in selectOptionsAll2"
+                          :key="item.id"
+                          :value="item.deptName">{{item.deptName}}
+                        </el-option>
+                      </el-select>
+                    </td>
                   </tr>
                   <tr>
                     <td style="font-weight: bolder">职位</td>
@@ -254,7 +266,8 @@
         dialogTableVisible2:false,//隐藏编辑对话框
         aData: '',
         deptName:'',
-        selectOptionsAll: [],
+        selectOptionsAll: [],//班级名称集合
+        selectOptionsAll2:[],//部门名称集合
         sName:'all',//对应filters的f1,用于发送axios请求
         dept:'all',
         jobStr:'all',
@@ -289,6 +302,11 @@
           this.selectOptionsAll = res.data
         })
       },
+      getDeptName(){
+        axios.get('/toGetAllDeptName/').then(res => {
+          this.selectOptionsAll2 = res.data
+        })
+      },
       checkFilter(){
         if (""!==this.filters.f1){
           this.sName=this.filters.f1
@@ -319,6 +337,7 @@
         })
       },
       refreshList(){
+        this.getDeptName();
         this.getClassName();
         this.getStudentsByPage();
         this.getStudentsByLike();

@@ -41,6 +41,11 @@ export default new Router({
       path: '/toGetClass',
       name: 'ToGetClass',
       component: ToGetClass
+    },
+    {
+      path: '/test',
+      name: 'Test',
+      component: Test
     }
   ]
 })

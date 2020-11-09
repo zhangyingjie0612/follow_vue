@@ -3,35 +3,49 @@
     <el-table
       :data="tableData"
       height="630"
-      style="width:680px;margin-left: 430px;margin-top: 40px">
-      <el-table-column
-        type="index"
-        label="序号"
-        width="80">
-      </el-table-column>
-      <el-table-column
-        prop="userName"
-        label="姓名"
-        width="150">
-      </el-table-column>
-      <el-table-column
-        prop="pwd"
-        label="密码"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="roleName"
-        label="权限"
-        width="120">
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="150">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleReset(scope.$index, scope.row)">重置
-          </el-button>
+      style="width:1208px;margin-left: 170px;margin-top: 40px"
+      align="center">
+      <el-table-column>
+        <template slot="header" slot-scope="scope">
+          <span style="font-size: x-large">重置密码</span>
+          <div style="float: right;margin-right: 20px">
+            <el-input placeholder="输入用户姓名搜索" style="width: 200px" v-model="filters.f1"></el-input>
+            <el-button size="small" icon="el-icon-search" circle @click="refreshList()"></el-button>
+          </div>
         </template>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="150"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="userName"
+          label="姓名"
+          width="250"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="pwd"
+          label="密码"
+          width="250"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="roleName"
+          label="权限"
+          width="250"
+          align="center">
+        </el-table-column>
+        <el-table-column label="操作" align="center" width="300">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleReset(scope.$index, scope.row)">重置
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table-column>
     </el-table>
     <div>
@@ -59,17 +73,30 @@
         totalUsersData: [],
         pageSize: 5,
         curPage: 1,
-        userId: ''
+        userId: '',
+        filters: {//模糊查询的过滤器，绑定input框
+          f1: ""
+        },
+        nameStr: 'all',//对应filters的f1,用于发送axios请求
       }
     },
     methods: {
+      checkFilter() {
+        if ("" !== this.filters.f1) {
+          this.nameStr = this.filters.f1
+        } else {
+          this.nameStr = "all"
+        }
+      },
       getUserPwd() {
-        axios.get('/getUser/' + this.curPage + '/' + this.pageSize).then(res => {
+        this.checkFilter();
+        axios.get('/getUser/' + this.curPage + '/' + this.pageSize+ '/' + this.nameStr).then(res => {
           this.tableData = res.data
         })
       },
       getUserPwd2() {
-        axios.get('/getUser2/').then(res => {
+        this.checkFilter();
+        axios.get('/getUser2/'+ this.nameStr).then(res => {
           this.totalUsersData = res.data
         })
       },
@@ -83,11 +110,14 @@
           }
           location.reload()
         })
-      }
+      },
+      refreshList() {
+        this.getUserPwd();
+        this.getUserPwd2()
+      },
     },
     mounted() {
-      this.getUserPwd();
-      this.getUserPwd2();
+      this.refreshList()
     }
   }
 </script>
