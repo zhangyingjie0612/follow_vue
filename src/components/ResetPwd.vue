@@ -101,14 +101,26 @@
         })
       },
       handleReset(index, row) {
-        this.userId = row.userId;
-        axios.get('/gotoResetPwd/' + this.userId).then(res => {
-          if (res.data > 0) {
-            alert("重置成功")
-          } else {
-            alert("重置失败")
-          }
-          location.reload()
+        this.$confirm('确定重置吗?', '提示', {
+          type: 'warning'
+        }).then(()=>{
+          this.userId = row.userId;
+          axios.get('/gotoResetPwd/' + this.userId).then(res => {
+            if (res.data > 0) {
+              this.$message({
+                message: '重置成功',
+                type: 'success',
+                offset:330
+              });
+            } else {
+              this.$message({
+                message: '重置失败',
+                type: 'warning',
+                offset:330
+              });
+            }
+            this.refreshList()
+          })
         })
       },
       refreshList() {

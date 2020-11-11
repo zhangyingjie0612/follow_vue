@@ -53,6 +53,7 @@
               :prop="'z'+one.prop"
               :label="one.label"
               :key="'z'+one.prop"
+              :formatter="formatNull"
               width="80px">
             </el-table-column>
           </template>
@@ -116,9 +117,19 @@
         className:'all',
         nameStr:'all',//对应filters的f1,用于发送axios请求
         scoreData:'',
+        courseNum:''
       }
     },
     methods: {
+      /*flag显示转换*/
+      formatNull: function (row, column, cellValue, index) {
+        if (cellValue==null){
+          return "未录入";
+        }
+        else {
+          return cellValue;
+        }
+      },
       /*获取课程名和课程id，发送班级、姓名*/
       getCourse(){
         this.checkFilter2();
@@ -174,27 +185,6 @@
             )
             if (this.tableData[i].evlcontent == null) (
               this.tableData[i].evlcontent="未评价"
-            )
-            if (this.tableData[i].z1 == null) (
-              this.tableData[i].z1="未录入"
-            )
-            if (this.tableData[i].z2 == null) (
-              this.tableData[i].z2="未录入"
-            )
-            if (this.tableData[i].z3 == null) (
-              this.tableData[i].z3="未录入"
-            )
-            if (this.tableData[i].z4 == null) (
-              this.tableData[i].z4="未录入"
-            )
-            if (this.tableData[i].z5 == null) (
-              this.tableData[i].z5="未录入"
-            )
-            if (this.tableData[i].z6 == null) (
-              this.tableData[i].z6="未录入"
-            )
-            if (this.tableData[i].z7 == null) (
-              this.tableData[i].z7="未录入"
             )
           }
         })

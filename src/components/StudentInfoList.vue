@@ -320,6 +320,7 @@
         imageUrl: '',
         imgPath: '',
         years:'',
+        months:'',
         rules: {
           stuName: [
             { required: true, message: '请输入学生姓名', trigger: 'blur' }
@@ -437,10 +438,18 @@
         }).then(()=>{
           axios.get('/toDelStudent/' + row.stuId).then(res => {
             if(res.data>0){
-              alert("删除成功")
-              location.reload()
+              this.$message({
+                message: '删除成功',
+                type: 'success',
+                offset:330
+              });
+              this.refreshList();
             }else{
-              alert("删除失败")
+              this.$message({
+                message: '删除失败',
+                type: 'warning',
+                offset:330
+              });
             }
           })
         })
@@ -455,7 +464,7 @@
           this.$message({
             message: '请先勾选要删除的项',
             type: 'warning',
-            offset:350
+            offset:330
           });
         }else{
           this.$confirm('确认删除吗?', '提示', {
@@ -467,10 +476,18 @@
             }
             axios.get('/toDelStudents/'+ids).then(res=>{
               if(res.data>0){
-                alert("删除成功");
-                location.reload();
+                this.$message({
+                  message: '删除成功',
+                  type: 'success',
+                  offset:330
+                });
+                this.refreshList();
               }else{
-                alert("删除失败");
+                this.$message({
+                  message: '删除失败',
+                  type: 'warning',
+                  offset:330
+                });
               }
             })
           })
@@ -499,7 +516,8 @@
               let tJob=this.aData.jobtime.split("-");
               if((mm-tJob[1])<0){
                 this.years=yy-1-tJob[0];
-                if(this.years<1){
+                this.months=mm+12-tJob[1];
+                if(this.months<3){
                   this.aData.state=0;
                 }
                 if(this.years<2&&this.years>1){
@@ -511,10 +529,17 @@
                 if(this.years>3){
                   this.aData.state=3
                 }
+                if(this.months>3&&this.months<12){
+                  this.aData.state=5
+                }
               }else{
                 this.years=yy-tJob[0];
-                if(this.years<1){
+                this.months=mm-tJob[1];
+                if(this.months<3){
                   this.aData.state=0;
+                }
+                if(this.months>3&&this.months<12){
+                  this.aData.state=5;
                 }
                 if(this.years<2&&this.years>1){
                   this.aData.state=1;
