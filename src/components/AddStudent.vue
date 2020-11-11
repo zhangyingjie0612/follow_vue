@@ -121,7 +121,7 @@
       </tr>
     </table>
     <br><br>
-    <el-button type="primary" @click="goToSubmit()">提交</el-button>
+    <el-button type="primary" @click="goToSubmit('tableData')">提交</el-button>
     <el-button @click="resetForm()">重置</el-button>
     <el-button @click="returnList()">返回</el-button>
   </el-form>
@@ -142,7 +142,7 @@
           birthplace:'',
           marry:'',
           telephone:'',
-          idCard:'',
+          idcard:'',
           university:'',
           major:'',
           photo:'',
@@ -213,24 +213,23 @@
         }
         return isJPG && isLt2M;
       },
-      goToSubmit(){
-        this.tableData.photo=this.imgPath
-        if(undefined===this.tableData.note||""===this.tableData.note){
-          this.tableData.note=null
-        }
-        if(undefined===this.tableData.photo||""===this.tableData.photo){
-          this.tableData.photo=null
-        }
-        axios.get('/toAddStudent/'+this.tableData.stuName+'/'+this.tableData.sex+'/'+this.tableData.nation+'/'+this.tableData.birthday
-          +'/'+this.tableData.birthplace +'/'+this.tableData.marry+'/'+this.tableData.telephone+'/'+this.tableData.idcard+'/' +this.tableData.university +'/'
-          +this.tableData.major+'/'+this.tableData.photo +'/'+this.tableData.note+'/'+this.tableData.className).then(res => {
-          if(res.data){
-            alert("新增成功")
-            location.reload()
-          }else{
-            alert("新增失败")
+      goToSubmit(tableData){
+        this.$refs[tableData].validate((valid) => {
+          if (valid) {
+            this.tableData.photo=this.imgPath
+            axios.post('/toAddStudent/',this.tableData).then(res => {
+              if(res.data){
+                alert("新增成功")
+                location.reload()
+              }else{
+                alert("新增失败")
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-        })
+        });
       },
       resetForm(ruleForm) {
         location.reload()

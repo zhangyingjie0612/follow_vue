@@ -15,14 +15,7 @@
             <el-input placeholder="输入职位" v-model="filters.f3" style="width: 200px"></el-input>
             <el-button size="small" icon="el-icon-search" circle @click="refreshList()"></el-button>
             <el-button size="small" type="primary" icon="el-icon-plus" circle @click="handleAdd()"></el-button>
-            <el-button size="small" type="danger" icon="el-icon-delete" circle @click="multiDeleteVisible=true"></el-button>
-            <el-dialog :visible.sync="multiDeleteVisible" title="提示" width="30%">
-              <span>确定要删除吗</span>
-              <span slot="footer">
-                <el-button type="primary" @click="delStudents();multiDeleteVisible=false">确 定</el-button>
-                <el-button @click="multiDeleteVisible=false">取消</el-button>
-              </span>
-            </el-dialog>
+            <el-button size="small" type="danger" icon="el-icon-delete" circle @click="delStudents()"></el-button>
           </div>
         </template>
         <el-table-column
@@ -69,8 +62,8 @@
             <el-button size="mini" type="primary"
                        @click="dialogTableVisible = true;handleLook(scope.$index, scope.row)">查看
             </el-button>
-            <el-dialog title="学员详细信息" :visible.sync="dialogTableVisible" width="1300px">
-              <table style="width: 1200px;height: 400px" align="center">
+            <el-dialog title="学员详细信息" :visible.sync="dialogTableVisible" width="1200px">
+              <table style="width: 1100px;height: 400px" align="center">
                 <tr>
                   <td style="font-weight: bolder;width: 120px">姓名</td>
                   <td width="200">{{aData.stuName}}</td>
@@ -118,20 +111,27 @@
             </el-dialog>
             &nbsp;
             <el-button size="mini" type="success" @click="dialogTableVisible2 = true;handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-dialog title="编辑学生信息" :visible.sync="dialogTableVisible2" width="1200px">
-              <el-form>
-                <table style="width: 1100px;height: 400px" align="center" :data="tableData">
+            <el-dialog title="编辑学生信息" :visible.sync="dialogTableVisible2" width="1350px">
+              <el-form :model="aData" status-icon :rules="rules" ref="aData">
+                <table style="width: 1300px;height: 400px;border: none" align="center">
                   <tr>
-                    <td style="font-weight: bolder;width: 120px">姓名</td>
-                    <td width="200"><input type="text" v-model="aData.stuName"></td>
-                    <td style="font-weight: bolder;width: 120px">性别</td>
-                    <td width="200">
-                      <el-radio v-model="aData.sex" label="男">男</el-radio>
-                      <el-radio v-model="aData.sex" label="女">女</el-radio>
+                    <td style="border: none">
+                      <el-form-item label="姓名" :label-width="formLabelWidth" prop="stuName">
+                        <el-input v-model="aData.stuName" placeholder="请输入内容" style="width: 220px"></el-input>
+                      </el-form-item>
                     </td>
-                    <td style="font-weight: bolder;width: 120px">民族</td>
-                    <td width="200"><input type="text" v-model="aData.nation"></td>
-                    <td rowspan="5" width="300px">
+                    <td style="border: none">
+                      <el-form-item label="性别" :label-width="formLabelWidth" prop="sex">
+                        <el-radio v-model="aData.sex" label="男">男</el-radio>
+                        <el-radio v-model="aData.sex" label="女">女</el-radio>
+                      </el-form-item>
+                    </td>
+                    <td style="border: none">
+                      <el-form-item label="民族" :label-width="formLabelWidth" prop="nation">
+                        <el-input v-model="aData.nation" placeholder="请输入内容" style="width: 220px"></el-input>
+                      </el-form-item>
+                    </td>
+                    <td rowspan="4" style="border: none">
                       <div class="photo">
                         <el-upload
                           class="avatar-uploader"
@@ -147,82 +147,107 @@
                     </td>
                   </tr>
                   <tr>
-                    <td style="font-weight: bolder">出生年月</td>
-                    <td>
-                      <el-date-picker
-                        v-model="aData.birthday"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择出生日期">
-                      </el-date-picker>
+                    <td style="border: none">
+                      <el-form-item label="出生年月" :label-width="formLabelWidth" prop="birthday">
+                        <el-date-picker
+                          v-model="aData.birthday"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="选择出生日期"
+                          style="width: 220px">
+                        </el-date-picker>
+                      </el-form-item>
                     </td>
-                    <td style="font-weight: bolder">籍贯</td>
-                    <td><input type="text" v-model="aData.birthplace"></td>
-                    <td style="font-weight: bolder">婚否</td>
-                    <td>
-                      <el-radio v-model="aData.marry" label="未婚">未婚</el-radio>
-                      <el-radio v-model="aData.marry" label="已婚">已婚</el-radio>
+                    <td style="border: none">
+                      <el-form-item label="籍贯" :label-width="formLabelWidth" prop="birthplace">
+                        <el-input v-model="aData.birthplace" placeholder="请输入内容" style="width: 220px"></el-input>
+                      </el-form-item>
                     </td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight: bolder">联系电话</td>
-                    <td><input type="text" v-model="aData.telephone"></td>
-                    <td style="font-weight: bolder">身份证号码</td>
-                    <td colspan="3"><input type="text" v-model="aData.idCard"></td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight: bolder">毕业院校</td>
-                    <td><input type="text" v-model="aData.university"></td>
-                    <td style="font-weight: bolder">专业</td>
-                    <td colspan="3"><input type="text" v-model="aData.major"></td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight: bolder">入职时间</td>
-                    <td>
-                      <el-date-picker
-                        v-model="aData.jobtime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择入职时间">
-                      </el-date-picker>
-                    </td>
-                    <td style="font-weight: bolder">班期</td>
-                    <td><el-select
-                      clearable
-                      v-model="aData.className"
-                      placeholder="请选择班期"
-                      maxlength="255">
-                      <el-option
-                        v-for="item in selectOptionsAll"
-                        :key="item.id"
-                        :value="item.className">{{item.className}}
-                      </el-option>
-                    </el-select>
-                    </td>
-                    <td style="font-weight: bolder">部门名称</td>
-                    <td>
-                      <el-select
-                        clearable
-                        v-model="aData.deptName"
-                        placeholder="请选择班期"
-                        maxlength="255">
-                        <el-option
-                          v-for="item in selectOptionsAll2"
-                          :key="item.id"
-                          :value="item.deptName">{{item.deptName}}
-                        </el-option>
-                      </el-select>
+                    <td style="border: none">
+                      <el-form-item label="婚否" :label-width="formLabelWidth" prop="marry">
+                        <el-radio v-model="aData.marry" label="未婚">未婚</el-radio>
+                        <el-radio v-model="aData.marry" label="已婚">已婚</el-radio>
+                      </el-form-item>
                     </td>
                   </tr>
                   <tr>
-                    <td style="font-weight: bolder">职位</td>
-                    <td><input type="text" v-model="aData.job"></td>
-                    <td style="font-weight: bolder">备注</td>
-                    <td colspan="4"><input type="text" v-model="aData.note"></td>
+                    <td style="border: none">
+                      <el-form-item label="联系电话" :label-width="formLabelWidth" prop="telephone">
+                        <el-input v-model="aData.telephone" placeholder="请输入内容" style="width: 220px"></el-input>
+                      </el-form-item>
+                    </td>
+                    <td style="border: none">
+                      <el-form-item label="身份证号码" :label-width="formLabelWidth" prop="idCard">
+                        <el-input v-model="aData.idCard" placeholder="请输入内容" style="width: 220px"></el-input>
+                      </el-form-item>
+                    </td>
+                    <td style="border: none">
+                      <el-form-item label="毕业院校" :label-width="formLabelWidth" prop="university">
+                        <el-input v-model="aData.university" placeholder="请输入内容" style="width: 220px"></el-input>
+                      </el-form-item>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border: none">
+                      <el-form-item label="专业" :label-width="formLabelWidth" prop="major">
+                        <el-input v-model="aData.major" placeholder="请输入内容" style="width: 220px"></el-input>
+                      </el-form-item>
+                    </td>
+                    <td style="border: none">
+                      <el-form-item label="入职时间" :label-width="formLabelWidth">
+                        <el-date-picker
+                          v-model="aData.jobtime"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="选择入职时间"
+                          style="width: 220px">
+                        </el-date-picker>
+                      </el-form-item>
+                    </td>
+                    <td style="border: none">
+                      <el-form-item label="班期" :label-width="formLabelWidth" prop="className">
+                        <el-select
+                          v-model="aData.className"
+                          placeholder="请选择班期"
+                          style="width: 220px">
+                          <el-option
+                            v-for="item in selectOptionsAll"
+                            :key="item.id"
+                            :value="item.className">{{item.className}}
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border: none">
+                      <el-form-item label="部门名称" :label-width="formLabelWidth">
+                        <el-select
+                          clearable
+                          v-model="aData.deptName"
+                          placeholder="请选择部门"
+                          style="width: 220px">
+                          <el-option
+                            v-for="item in selectOptionsAll2"
+                            :key="item.id"
+                            :value="item.deptName">{{item.deptName}}
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                    </td>
+                    <td style="border: none">
+                      <el-form-item label="职位" :label-width="formLabelWidth">
+                        <el-input v-model="aData.job" style="width: 220px"></el-input>
+                      </el-form-item>
+                    </td>
+                    <td colspan="2" style="border: none">
+                      <el-form-item label="备注" :label-width="formLabelWidth">
+                        <el-input v-model="aData.note"></el-input>
+                      </el-form-item>
+                    </td>
                   </tr>
                 </table>
-                <br><br>
-                <el-button type="primary" @click="goToSubmit()">提交</el-button>
+                <el-button type="primary" @click="goToSubmit('aData')">提交</el-button>
               </el-form>
             </el-dialog>
             &nbsp;
@@ -251,6 +276,7 @@
     name: "StudentInfoList",
     data() {
       return {
+        formLabelWidth:"100px",
         filters:{//模糊查询的过滤器，绑定input框
           f1:"",
           f2:"",
@@ -261,19 +287,11 @@
         curPage: 1,
         totalStudentsData: [],
         multipleSelection:[],//批量删除选择的复选框数组
-        multiDeleteVisible:false,//批量删除的提示框
         dialogTableVisible: false,//查看
         dialogTableVisible2:false,//隐藏编辑对话框
-        aData: '',
-        deptName:'',
-        selectOptionsAll: [],//班级名称集合
-        selectOptionsAll2:[],//部门名称集合
-        sName:'all',//对应filters的f1,用于发送axios请求
-        dept:'all',
-        jobStr:'all',
-        imageUrl: '',
-        imgPath: '',
-        updateData:{
+        // sId:'',//单条删除的id
+        // delById:false,//单条删除的提示框
+        aData:{
           stuId:'',
           stuName:'',
           sex:'',
@@ -293,18 +311,63 @@
           job:'',
           jobtime:''
         },
-        years:''
+        deptName:'',
+        selectOptionsAll: [],//班期名称
+        selectOptionsAll2:[],//部门名称
+        sName:'all',//对应filters的f1,用于发送axios请求
+        dept:'all',
+        jobStr:'all',
+        imageUrl: '',
+        imgPath: '',
+        years:'',
+        rules: {
+          stuName: [
+            { required: true, message: '请输入学生姓名', trigger: 'blur' }
+          ],
+          sex:[
+            {required: true, message: '请选择性别', trigger: 'change'}
+          ],
+          nation:[
+            { required: true, message: '请输入民族', trigger: 'blur' }
+          ],
+          birthday:[
+            {required: true, message: '请选择出生日期', trigger: 'change'}
+          ],
+          birthplace:[
+            { required: true, message: '请输入籍贯', trigger: 'blur' }
+          ],
+          marry:[
+            { required: true, message: '请选择婚姻状况', trigger: 'change' }
+          ],
+          telephone:[
+            { required: true, message: '请输入电话号码', trigger: 'blur' },
+            { pattern: /^1[3|4|5|6|7|8][0-9]{9}$/, message: '输入的格式不正确', trigger: 'blur' }
+          ],
+          idCard:[
+            { required: true, message: '请输入身份证号', trigger: 'blur' },
+            { pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/, message: '请输入正确的格式', trigger: 'blur' }
+          ],
+          university:[
+            { required: true, message: '请输入毕业院校', trigger: 'blur' }
+          ],
+          major:[
+            { required: true, message: '请输入专业', trigger: 'blur' }
+          ],
+          className:[
+            { required: true, message: '请选择班期', trigger: 'change' }
+          ]
+        }
       }
     },
     methods: {
+      getAllDeptName(){
+        axios.get('/toGetAllDeptName/').then(res => {
+          this.selectOptionsAll2 = res.data
+        })
+      },
       getClassName(){
         axios.get('/toGetClassName/').then(res => {
           this.selectOptionsAll = res.data
-        })
-      },
-      getDeptName(){
-        axios.get('/toGetAllDeptName/').then(res => {
-          this.selectOptionsAll2 = res.data
         })
       },
       checkFilter(){
@@ -337,7 +400,7 @@
         })
       },
       refreshList(){
-        this.getDeptName();
+        this.getAllDeptName();
         this.getClassName();
         this.getStudentsByPage();
         this.getStudentsByLike();
@@ -369,97 +432,122 @@
       },
       //单条删除
       handleDelete(index, row) {
-        axios.get('/toDelStudent/' + row.stuId).then(res => {
-          if(res.data>0){
-            alert("删除成功")
-            location.reload()
-          }else{
-            alert("删除失败")
-          }
+        this.$confirm('确认删除吗?', '提示', {
+          type: 'warning'
+        }).then(()=>{
+          axios.get('/toDelStudent/' + row.stuId).then(res => {
+            if(res.data>0){
+              alert("删除成功")
+              location.reload()
+            }else{
+              alert("删除失败")
+            }
+          })
         })
       },
+      //批量删除
       handleSelectionChange(val){
         this.multipleSelection = val;
-        if (this.multipleSelection.length== 0){
-          alert("请先勾选要删除的学生")
-        }
       },
       //批量删除
       delStudents(){
-        let ids = [];
-        for (let i = 0; i < this.multipleSelection.length; i++) {
-          ids.push(this.multipleSelection[i].stuId);
+        if (this.multipleSelection.length== 0){
+          this.$message({
+            message: '请先勾选要删除的项',
+            type: 'warning',
+            offset:350
+          });
+        }else{
+          this.$confirm('确认删除吗?', '提示', {
+            type: 'warning'
+          }).then(()=>{
+            let ids = [];
+            for (let i = 0; i < this.multipleSelection.length; i++) {
+              ids.push(this.multipleSelection[i].stuId);
+            }
+            axios.get('/toDelStudents/'+ids).then(res=>{
+              if(res.data>0){
+                alert("删除成功");
+                location.reload();
+              }else{
+                alert("删除失败");
+              }
+            })
+          })
         }
-        axios.get('/toDelStudents/'+ids).then(res=>{
-          if(res.data>0){
-            alert("删除成功");
-            location.reload();
-          }else{
-            alert("删除失败");
-          }
-        })
       },
       handleEdit(index, row) {
         this.aData = row
         this.imageUrl=this.aData.photo
       },
-      goToSubmit(){
-        this.updateData=this.aData
-        this.updateData.photo=this.imgPath
-        //计算学生状态
-        if(undefined===this.aData.jobtime||""===this.aData.jobtime){
-          this.updateData.state=0;
-          this.updateData.jobtime=null
-        }else{
-          let yy = new Date().getFullYear();
-          let mm = new Date().getMonth() + 1;
-          let tJob=this.aData.jobtime.split("-");
-          if((mm-tJob[1])<0){
-            this.years=yy-1-tJob[0];
-            if(this.years<1){
-              this.updateData.state=0;
+      goToSubmit(aData){
+        this.$refs[aData].validate((valid) => {
+          if (valid) {
+            if ("../../static/imgs/" == this.imageUrl.substring(0,18)) {
+              this.imageUrl=this.imageUrl.substring(18)
+              this.aData.photo=this.imageUrl
+            }else {
+              this.aData.photo=this.imgPath
             }
-            if(this.years<2&&this.years>1){
-              this.updateData.state=1;
+            //计算学生状态
+            if(undefined===this.aData.jobtime||""===this.aData.jobtime){
+              this.aData.state=0;
+              this.aData.jobtime=null
+            }else{
+              let yy = new Date().getFullYear();
+              let mm = new Date().getMonth() + 1;
+              let tJob=this.aData.jobtime.split("-");
+              if((mm-tJob[1])<0){
+                this.years=yy-1-tJob[0];
+                if(this.years<1){
+                  this.aData.state=0;
+                }
+                if(this.years<2&&this.years>1){
+                  this.aData.state=1;
+                }
+                if(this.years<3&&this.years>2){
+                  this.aData.state=2;
+                }
+                if(this.years>3){
+                  this.aData.state=3
+                }
+              }else{
+                this.years=yy-tJob[0];
+                if(this.years<1){
+                  this.aData.state=0;
+                }
+                if(this.years<2&&this.years>1){
+                  this.aData.state=1;
+                }
+                if(this.years<3&&this.years>2){
+                  this.aData.state=2;
+                }
+                if(this.years>3){
+                  this.aData.state=3
+                }
+              }
+              console.log(this.years)
+              console.log(this.state)
             }
-            if(this.years<3&&this.years>2){
-              this.updateData.state=2;
-            }
-            if(this.years>3){
-              this.updateData.state=3
-            }
-          }else{
-            this.years=yy-tJob[0];
-            if(this.years<1){
-              this.updateData.state=0;
-            }
-            if(this.years<2&&this.years>1){
-              this.updateData.state=1;
-            }
-            if(this.years<3&&this.years>2){
-              this.updateData.state=2;
-            }
-            if(this.years>3){
-              this.updateData.state=3
-            }
+            axios.post('/toUpdateStudent/',this.aData).then(res => {
+              if(res.data>0){
+                this.$message({
+                  message: '修改成功',
+                  type: 'success'
+                });
+                this.dialogTableVisible2=false
+              }else{
+                this.$message({
+                  message: '修改失败',
+                  type: 'warning'
+                });
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-          console.log(this.years)
-          console.log(this.state)
-        }
-        axios.post('/toUpdateStudent/',this.updateData).then(res => {
-          if(res.data>0){
-            this.$message({
-              message: '修改成功',
-              type: 'success'
-            });
-            this.dialogTableVisible2=false
-          }else{
-            this.$message({
-              message: '修改失败',
-              type: 'warning'
-            });
-          }
-        })
+        });
       }
     },
     mounted() {
@@ -473,11 +561,6 @@
     border: 2px solid #cccccc;
     border-collapse: collapse;
     padding-left: 10px;
-  }
-  input{
-    height: 100%;
-    width: 95%;
-    border: none;
   }
   .avatar-uploader .el-upload {
     border: 1px dashed #409EFF;

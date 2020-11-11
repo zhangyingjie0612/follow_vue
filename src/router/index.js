@@ -4,7 +4,6 @@ import HelloWorld from '@/components/HelloWorld'
 import StudentList from '@/components/StudentList'
 import StudentInfoList from '@/components/StudentInfoList'
 import AddStudent from '@/components/AddStudent'
-import Test from '@/components/Test'
 import ResetPwd from '@/components/ResetPwd'
 import ToGetClass from '@/components/ToGetClass'
 
@@ -41,11 +40,6 @@ export default new Router({
       path: '/toGetClass',
       name: 'ToGetClass',
       component: ToGetClass
-    },
-    {
-      path: '/test',
-      name: 'Test',
-      component: Test
     }
   ]
 })
