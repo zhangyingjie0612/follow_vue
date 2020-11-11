@@ -59,7 +59,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="evlcontent"
+          prop="evlScore"
           label="学校评价"
           width="80">
         </el-table-column>
@@ -183,8 +183,8 @@
             if (this.tableData[i].s4 == null) (
               this.tableData[i].s4="未评价"
             )
-            if (this.tableData[i].evlcontent == null) (
-              this.tableData[i].evlcontent="未评价"
+            if (this.tableData[i].evlScore == null) (
+              this.tableData[i].evlScore="未评价"
             )
           }
         })
