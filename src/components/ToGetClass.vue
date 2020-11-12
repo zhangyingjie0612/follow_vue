@@ -51,11 +51,11 @@
     </el-table>
     <!--    编辑弹框-->
     <el-dialog title="编辑班期信息" :visible.sync="dialogTableVisible" width="600px" height="500px">
-      <el-form :data="aData">
+      <el-form :model="aData" status-icon :rules="rules" ref="aData">
         <el-form-item label="班期：" :label-width="formLabelWidth">
           <el-input v-model="aData.className" autocomplete="off" style="width: 250px" :readonly="true"></el-input>
         </el-form-item>
-        <el-form-item label="授课教师：" :label-width="formLabelWidth">
+        <el-form-item label="授课教师：" :label-width="formLabelWidth" prop="userName">
           <el-select
             v-model="aData.userName"
             placeholder="请选择授课老师"
@@ -68,7 +68,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="课程：" :label-width="formLabelWidth">
+        <el-form-item label="课程：" :label-width="formLabelWidth" prop="checkedCourses">
           <el-checkbox-group
             v-model="checkedCourses"
             :min="1"
@@ -76,16 +76,16 @@
             <el-checkbox v-for="course in coursesSelection" :label="course.courseName" :key="course.courseName" :value="course.courseName">{{course.courseName}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-button size="medium" type="primary" @click="goToSubmit()">提交</el-button>
+        <el-button size="medium" type="primary" @click="goToSubmit('aData')">提交</el-button>
       </el-form>
     </el-dialog>
     <!--    新增弹框-->
     <el-dialog title="新增班期信息" :visible.sync="dialogTableVisible2" width="600px" height="500px">
-      <el-form :data="aData1">
+      <el-form :model="aData1" status-icon :rules="rules" ref="aData1">
         <el-form-item label="班期：" :label-width="formLabelWidth">
           <el-input v-model="addClassName" autocomplete="off" style="width: 250px" :readonly="true"></el-input>
         </el-form-item>
-        <el-form-item label="授课教师：" :label-width="formLabelWidth">
+        <el-form-item label="授课教师：" :label-width="formLabelWidth" prop="userName">
           <el-select
             v-model="aData1.userName"
             placeholder="请选择授课老师"
@@ -97,14 +97,14 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="课程：" :label-width="formLabelWidth">
+        <el-form-item label="课程：" :label-width="formLabelWidth" prop="checkedCourses2">
           <el-checkbox-group
             v-model="checkedCourses2"
             :max="6">
             <el-checkbox v-for="course in coursesSelection" :label="course.courseName" :key="course.courseName" :value="course.courseName">{{course.courseName}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-button size="medium" type="primary" @click="handleAdd()">提交</el-button>
+        <el-button size="medium" type="primary" @click="handleAdd('aData1')">提交</el-button>
       </el-form>
     </el-dialog>
     <div>
@@ -126,6 +126,20 @@
   export default {
     name: "ToGetClass",
     data() {
+      var checkCourses2 = (rule, value, callback) => {
+        if (this.checkedCourses2.length!==6) {
+          return callback(new Error('必须勾选6门课'))
+        }else{
+          callback()
+        }
+      };
+      var checkCourses = (rule, value, callback) => {
+        if (this.checkedCourses.length!==6) {
+          return callback(new Error('必须勾选6门课'))
+        }else{
+          callback()
+        }
+      };
       return {
         dialogTableVisible: false,//修改的弹框
         dialogTableVisible2:false,//新增的弹框
@@ -134,7 +148,11 @@
           f2: ""
         },
         tableData: [],
-        aData: '',
+        aData: {
+          className:'',
+          userName:'',
+          userId:''
+        },
         aData1: {
           className:'',
           userName:'',
@@ -158,6 +176,17 @@
         editData1:[],
         maxClassId:'',
         addClassName:'',
+        rules: {
+          userName: [
+            { required: true, message: '请选择讲师', trigger: 'change' }
+          ],
+          checkedCourses2:[
+            { validator: checkCourses2, trigger: 'change' }
+          ],
+          checkedCourses:[
+            { validator: checkCourses, trigger: 'change' }
+          ]
+        }
       }
     },
     methods: {
@@ -225,74 +254,88 @@
           this.checkedCourses=res.data
         });
       },
-      goToSubmit(){
-        //遍历教师姓名和教师id，根据教师姓名匹配教师Id
-        for(let i=0;i<this.selectTeacherName.length;i++){
-          if (this.selectTeacherName[i].userName==this.aData.userName){
-            this.aData.userId=this.selectTeacherName[i].userId
-          }
-        }
-        for(let i in this.checkedCourses){
-          for (let j in this.coursesSelection) {
-            if (this.checkedCourses[i]==this.coursesSelection[j].courseName){
-              this.editData[i] = JSON.parse(JSON.stringify({classId:this.aData.classId,courseId:this.coursesSelection[j].courseId}));
+      goToSubmit(aData){
+        this.$refs[aData].validate((valid) => {
+          if (valid) {
+            //遍历教师姓名和教师id，根据教师姓名匹配教师Id
+            for(let i=0;i<this.selectTeacherName.length;i++){
+              if (this.selectTeacherName[i].userName==this.aData.userName){
+                this.aData.userId=this.selectTeacherName[i].userId
+              }
             }
-          }
-        }
-        this.editData1=this.editData
-        console.log(this.editData)
-        console.log(this.editData1)
-        axios.get('/toUpdateClasses/' + this.aData.classId + '/' + this.aData.className+ '/' + this.aData.userId).then(res => {
-          if(res.data){
-            axios.post('/toAddClassCourse/',this.editData1).then(res => {
+            for(let i in this.checkedCourses){
+              for (let j in this.coursesSelection) {
+                if (this.checkedCourses[i]==this.coursesSelection[j].courseName){
+                  this.editData[i] = JSON.parse(JSON.stringify({classId:this.aData.classId,courseId:this.coursesSelection[j].courseId}));
+                }
+              }
+            }
+            this.editData1=this.editData
+            console.log(this.editData)
+            console.log(this.editData1)
+            axios.get('/toUpdateClasses/' + this.aData.classId + '/' + this.aData.className+ '/' + this.aData.userId).then(res => {
               if(res.data){
-                this.$message({
-                  message: '修改成功',
-                  type: 'success'
-                });
-                this.dialogTableVisible = false;
-              }else{
-                this.$message({
-                  message: '修改失败',
-                  type: 'warning'
-                });
+                axios.post('/toAddClassCourse/',this.editData1).then(res => {
+                  if(res.data){
+                    this.$message({
+                      message: '修改成功',
+                      type: 'success'
+                    });
+                    this.dialogTableVisible = false;
+                  }else{
+                    this.$message({
+                      message: '修改失败',
+                      type: 'warning'
+                    });
+                  }
+                })
               }
             })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-        })
+        });
       },
-      handleAdd() {
-        for(let i=0;i<this.selectTeacherName.length;i++){
-          if (this.selectTeacherName[i].userName==this.aData1.userName){
-            this.aData1.userId=this.selectTeacherName[i].userId
-          }
-        }
-        console.log(this.addClassName,this.aData1.userId)
-        axios.get('/toAddClass/' + this.addClassName + '/' + this.aData1.userId).then(res => {
-          this.cId=res.data;
-          for(let i in this.checkedCourses2){
-            for (let j in this.coursesSelection) {
-              if (this.checkedCourses2[i]==this.coursesSelection[j].courseName){
-                this.addData[i] = JSON.parse(JSON.stringify({classId:this.cId,courseId:this.coursesSelection[j].courseId}));
+      handleAdd(aData1) {
+        this.$refs[aData1].validate((valid) => {
+          if (valid) {
+            for(let i=0;i<this.selectTeacherName.length;i++){
+              if (this.selectTeacherName[i].userName==this.aData1.userName){
+                this.aData1.userId=this.selectTeacherName[i].userId
               }
             }
+            console.log(this.addClassName,this.aData1.userId)
+            axios.get('/toAddClass/' + this.addClassName + '/' + this.aData1.userId).then(res => {
+              this.cId=res.data;
+              for(let i in this.checkedCourses2){
+                for (let j in this.coursesSelection) {
+                  if (this.checkedCourses2[i]==this.coursesSelection[j].courseName){
+                    this.addData[i] = JSON.parse(JSON.stringify({classId:this.cId,courseId:this.coursesSelection[j].courseId}));
+                  }
+                }
+              }
+              this.addData1=this.addData
+              axios.post('/toAddClassCourse/',this.addData1).then(res => {
+                if(res.data){
+                  this.$message({
+                    message: '新增成功',
+                    type: 'success'
+                  });
+                  this.dialogTableVisible2 = false;
+                }else{
+                  this.$message({
+                    message: '新增失败',
+                    type: 'warning'
+                  });
+                }
+              })
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-          this.addData1=this.addData
-          axios.post('/toAddClassCourse/',this.addData1).then(res => {
-            if(res.data){
-              this.$message({
-                message: '新增成功',
-                type: 'success'
-              });
-              this.dialogTableVisible2 = false;
-            }else{
-              this.$message({
-                message: '新增失败',
-                type: 'warning'
-              });
-            }
-          })
-        })
+        });
       }
     },
     mounted() {

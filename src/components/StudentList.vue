@@ -121,7 +121,7 @@
       }
     },
     methods: {
-      /*flag显示转换*/
+      //分数为空的返回未录入
       formatNull: function (row, column, cellValue, index) {
         if (cellValue==null){
           return "未录入";
@@ -130,7 +130,7 @@
           return cellValue;
         }
       },
-      /*获取课程名和课程id，发送班级、姓名*/
+      //获取从后台封装的prop和label
       getCourse(){
         this.checkFilter2();
         axios.get("/toDoGetAllCourses/" + this.className).then(res=>{
@@ -171,21 +171,21 @@
         axios.get('/getStudentList/' + this.curPage + '/' + this.pageSize+ '/' + this.nameStr+'/'+this.className).then(res => {
           this.tableData = res.data
           for (var i in this.tableData) {
-            if (this.tableData[i].s1 == null) (
+            if (this.tableData[i].s1 == null){
               this.tableData[i].s1="未评价"
-            )
-            if (this.tableData[i].s2 == null) (
+            }
+            if (this.tableData[i].s2 == null){
               this.tableData[i].s2="未评价"
-            )
-            if (this.tableData[i].s3 == null) (
+            }
+            if (this.tableData[i].s3 == null){
               this.tableData[i].s3="未评价"
-            )
-            if (this.tableData[i].s4 == null) (
+            }
+            if (this.tableData[i].s4 == null){
               this.tableData[i].s4="未评价"
-            )
-            if (this.tableData[i].evlScore == null) (
+            }
+            if (this.tableData[i].evlScore == null){
               this.tableData[i].evlScore="未评价"
-            )
+            }
           }
         })
       },

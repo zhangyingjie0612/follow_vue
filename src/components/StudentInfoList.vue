@@ -71,7 +71,7 @@
                   <td width="200">{{aData.sex}}</td>
                   <td style="font-weight: bolder;width: 130px">民族</td>
                   <td width="200">{{aData.nation}}</td>
-                  <td rowspan="5" width="255px"><img  v-if="aData.photo" :src="aData.photo" class="avatar"></td>
+                  <td rowspan="5" width="255px"><img v-if="aData.photo" :src="aData.photo" class="avatar"></td>
                 </tr>
                 <tr>
                   <td style="font-weight: bolder">出生年月</td>
@@ -110,8 +110,11 @@
               </table>
             </el-dialog>
             &nbsp;
-            <el-button size="mini" type="success" @click="dialogTableVisible2 = true;handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-dialog title="编辑学生信息" :visible.sync="dialogTableVisible2" width="1350px">
+            <el-button size="mini" type="success"
+                       @click="dialogTableVisible2 = true;handleEdit(scope.$index, scope.row)">编辑
+            </el-button>
+            <el-dialog title="编辑学生信息" :visible.sync="dialogTableVisible2" width="1350px"
+                       :before-close="handleDialogClose">
               <el-form :model="aData" status-icon :rules="rules" ref="aData">
                 <table style="width: 1300px;height: 400px;border: none" align="center">
                   <tr>
@@ -247,6 +250,7 @@
                     </td>
                   </tr>
                 </table>
+                <el-button @click="handleDialogClose">取 消</el-button>
                 <el-button type="primary" @click="goToSubmit('aData')">提交</el-button>
               </el-form>
             </el-dialog>
@@ -272,120 +276,132 @@
 
 <script>
   import axios from 'axios'
+
   export default {
     name: "StudentInfoList",
     data() {
       return {
-        formLabelWidth:"100px",
-        filters:{//模糊查询的过滤器，绑定input框
-          f1:"",
-          f2:"",
-          f3:""
+        formLabelWidth: "100px",
+        filters: {//模糊查询的过滤器，绑定input框
+          f1: "",
+          f2: "",
+          f3: ""
         },
         tableData: [],
         pageSize: 8,
         curPage: 1,
         totalStudentsData: [],
-        multipleSelection:[],//批量删除选择的复选框数组
+        multipleSelection: [],//批量删除选择的复选框数组
         dialogTableVisible: false,//查看
-        dialogTableVisible2:false,//隐藏编辑对话框
-        // sId:'',//单条删除的id
-        // delById:false,//单条删除的提示框
-        aData:{
-          stuId:'',
-          stuName:'',
-          sex:'',
-          nation:'',
-          birthday:'',
-          birthplace:'',
-          marry:'',
-          telephone:'',
-          idCard:'',
-          university:'',
-          major:'',
-          photo:'',
-          note:'',
-          state:'',
-          className:'',
-          deptName:'',
-          job:'',
-          jobtime:''
+        dialogTableVisible2: false,//隐藏编辑对话框
+        aData: {
+          stuId: '',
+          stuName: '',
+          sex: '',
+          nation: '',
+          birthday: '',
+          birthplace: '',
+          marry: '',
+          telephone: '',
+          idCard: '',
+          university: '',
+          major: '',
+          photo: '',
+          note: '',
+          state: '',
+          className: '',
+          deptName: '',
+          job: '',
+          jobtime: ''
         },
-        deptName:'',
+        deptName: '',
         selectOptionsAll: [],//班期名称
-        selectOptionsAll2:[],//部门名称
-        sName:'all',//对应filters的f1,用于发送axios请求
-        dept:'all',
-        jobStr:'all',
+        selectOptionsAll2: [],//部门名称
+        sName: 'all',//对应filters的f1,用于发送axios请求
+        dept: 'all',
+        jobStr: 'all',
         imageUrl: '',
         imgPath: '',
-        years:'',
-        months:'',
+        years: '',
+        months: '',
+        initState: 5,
+        sumMonths:'',
         rules: {
           stuName: [
-            { required: true, message: '请输入学生姓名', trigger: 'blur' }
+            {required: true, message: '请输入学生姓名', trigger: 'blur'}
           ],
-          sex:[
+          sex: [
             {required: true, message: '请选择性别', trigger: 'change'}
           ],
-          nation:[
-            { required: true, message: '请输入民族', trigger: 'blur' }
+          nation: [
+            {required: true, message: '请输入民族', trigger: 'blur'}
           ],
-          birthday:[
+          birthday: [
             {required: true, message: '请选择出生日期', trigger: 'change'}
           ],
-          birthplace:[
-            { required: true, message: '请输入籍贯', trigger: 'blur' }
+          birthplace: [
+            {required: true, message: '请输入籍贯', trigger: 'blur'}
           ],
-          marry:[
-            { required: true, message: '请选择婚姻状况', trigger: 'change' }
+          marry: [
+            {required: true, message: '请选择婚姻状况', trigger: 'change'}
           ],
-          telephone:[
-            { required: true, message: '请输入电话号码', trigger: 'blur' },
-            { pattern: /^1[3|4|5|6|7|8][0-9]{9}$/, message: '输入的格式不正确', trigger: 'blur' }
+          telephone: [
+            {required: true, message: '请输入电话号码', trigger: 'blur'},
+            {pattern: /^1[3|4|5|6|7|8][0-9]{9}$/, message: '输入的格式不正确', trigger: 'blur'}
           ],
-          idCard:[
-            { required: true, message: '请输入身份证号', trigger: 'blur' },
-            { pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/, message: '请输入正确的格式', trigger: 'blur' }
+          idCard: [
+            {required: true, message: '请输入身份证号', trigger: 'blur'},
+            {
+              pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/,
+              message: '请输入正确的格式',
+              trigger: 'blur'
+            }
           ],
-          university:[
-            { required: true, message: '请输入毕业院校', trigger: 'blur' }
+          university: [
+            {required: true, message: '请输入毕业院校', trigger: 'blur'}
           ],
-          major:[
-            { required: true, message: '请输入专业', trigger: 'blur' }
+          major: [
+            {required: true, message: '请输入专业', trigger: 'blur'}
           ],
-          className:[
-            { required: true, message: '请选择班期', trigger: 'change' }
+          className: [
+            {required: true, message: '请选择班期', trigger: 'change'}
           ]
         }
       }
     },
     methods: {
-      getAllDeptName(){
+      handleDialogClose() {
+        this.resetForm('aData');
+        this.dialogTableVisible2 = false
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      },
+      getAllDeptName() {
         axios.get('/toGetAllDeptName/').then(res => {
           this.selectOptionsAll2 = res.data
         })
       },
-      getClassName(){
+      getClassName() {
         axios.get('/toGetClassName/').then(res => {
           this.selectOptionsAll = res.data
         })
       },
-      checkFilter(){
-        if (""!==this.filters.f1){
-          this.sName=this.filters.f1
-        }else {
-          this.sName="all"
+      checkFilter() {
+        if ("" !== this.filters.f1) {
+          this.sName = this.filters.f1
+        } else {
+          this.sName = "all"
         }
-        if (""!==this.filters.f2){
-          this.dept=this.filters.f2
-        }else {
-          this.dept="all"
+        if ("" !== this.filters.f2) {
+          this.dept = this.filters.f2
+        } else {
+          this.dept = "all"
         }
-        if (""!==this.filters.f3){
-          this.jobStr=this.filters.f3
-        }else {
-          this.jobStr="all"
+        if ("" !== this.filters.f3) {
+          this.jobStr = this.filters.f3
+        } else {
+          this.jobStr = "all"
         }
       },
       getStudentsByPage() {
@@ -400,13 +416,13 @@
           this.totalStudentsData = res.data
         })
       },
-      refreshList(){
+      refreshList() {
         this.getAllDeptName();
         this.getClassName();
         this.getStudentsByPage();
         this.getStudentsByLike();
       },
-      handleAdd(){
+      handleAdd() {
         this.$router.push({path: "/addstudent"});
       },
       handleLook(index, row) {
@@ -415,7 +431,7 @@
       //  图片上传
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
-        this.imgPath=file.response
+        this.imgPath = file.response
         console.log(file)
         console.log(this.imgPath)
       },
@@ -435,58 +451,58 @@
       handleDelete(index, row) {
         this.$confirm('确认删除吗?', '提示', {
           type: 'warning'
-        }).then(()=>{
+        }).then(() => {
           axios.get('/toDelStudent/' + row.stuId).then(res => {
-            if(res.data>0){
+            if (res.data > 0) {
               this.$message({
                 message: '删除成功',
                 type: 'success',
-                offset:330
+                offset: 330
               });
               this.refreshList();
-            }else{
+            } else {
               this.$message({
                 message: '删除失败',
                 type: 'warning',
-                offset:330
+                offset: 330
               });
             }
           })
         })
       },
       //批量删除
-      handleSelectionChange(val){
+      handleSelectionChange(val) {
         this.multipleSelection = val;
       },
       //批量删除
-      delStudents(){
-        if (this.multipleSelection.length== 0){
+      delStudents() {
+        if (this.multipleSelection.length == 0) {
           this.$message({
             message: '请先勾选要删除的项',
             type: 'warning',
-            offset:330
+            offset: 330
           });
-        }else{
+        } else {
           this.$confirm('确认删除吗?', '提示', {
             type: 'warning'
-          }).then(()=>{
+          }).then(() => {
             let ids = [];
             for (let i = 0; i < this.multipleSelection.length; i++) {
               ids.push(this.multipleSelection[i].stuId);
             }
-            axios.get('/toDelStudents/'+ids).then(res=>{
-              if(res.data>0){
+            axios.get('/toDelStudents/' + ids).then(res => {
+              if (res.data > 0) {
                 this.$message({
                   message: '删除成功',
                   type: 'success',
-                  offset:330
+                  offset: 330
                 });
                 this.refreshList();
-              }else{
+              } else {
                 this.$message({
                   message: '删除失败',
                   type: 'warning',
-                  offset:330
+                  offset: 330
                 });
               }
             })
@@ -494,10 +510,10 @@
         }
       },
       handleEdit(index, row) {
-        this.aData = row
-        this.imageUrl=this.aData.photo
+        this.aData = row;
+        this.imageUrl = this.aData.photo
       },
-      goToSubmit(aData){
+      goToSubmit(aData) {
         this.$refs[aData].validate((valid) => {
           if (valid) {
             if ("../../static/imgs/" == this.imageUrl.substring(0,18)) {
@@ -508,8 +524,7 @@
             }
             //计算学生状态
             if(undefined===this.aData.jobtime||""===this.aData.jobtime){
-              this.aData.state=0;
-              this.aData.jobtime=null
+              this.initState=0;
             }else{
               let yy = new Date().getFullYear();
               let mm = new Date().getMonth() + 1;
@@ -517,43 +532,47 @@
               if((mm-tJob[1])<0){
                 this.years=yy-1-tJob[0];
                 this.months=mm+12-tJob[1];
-                if(this.months<3){
-                  this.aData.state=0;
+                this.sumMonths=this.years*12+this.months;
+                if(this.sumMonths>=0&&this.sumMonths<3){
+                  this.initState=0;
                 }
-                if(this.years<2&&this.years>1){
-                  this.aData.state=1;
+                if(this.sumMonths>=3&&this.sumMonths<12){
+                  this.initState=5
                 }
-                if(this.years<3&&this.years>2){
-                  this.aData.state=2;
+                if(this.sumMonths<24&&this.sumMonths>=12){
+                  this.initState=1;
                 }
-                if(this.years>3){
-                  this.aData.state=3
+                if(this.sumMonths<36&&this.sumMonths>=24){
+                  this.initState=2;
                 }
-                if(this.months>3&&this.months<12){
-                  this.aData.state=5
+                if(this.sumMonths>=36){
+                  this.initState=3
                 }
               }else{
                 this.years=yy-tJob[0];
                 this.months=mm-tJob[1];
-                if(this.months<3){
-                  this.aData.state=0;
+                this.sumMonths=this.years*12+this.months;
+                if(this.sumMonths>=0&&this.sumMonths<3){
+                  this.initState=0;
                 }
-                if(this.months>3&&this.months<12){
-                  this.aData.state=5;
+                if(this.sumMonths>=3&&this.sumMonths<12){
+                  this.initState=5;
                 }
-                if(this.years<2&&this.years>1){
-                  this.aData.state=1;
+                if(this.sumMonths<24&&this.sumMonths>=12){
+                  this.initState=1;
                 }
-                if(this.years<3&&this.years>2){
-                  this.aData.state=2;
+                if(this.sumMonths<36&&this.sumMonths>=24){
+                  this.initState=2;
                 }
-                if(this.years>3){
-                  this.aData.state=3
+                if(this.sumMonths>=36){
+                  this.initState=3
                 }
               }
-              console.log(this.years)
-              console.log(this.state)
+              console.log(this.sumMonths)
+              console.log(this.initState)
             }
+            this.aData.state=this.initState;
+            console.log(this.aData.state)
             axios.post('/toUpdateStudent/',this.aData).then(res => {
               if(res.data>0){
                 this.$message({
@@ -587,6 +606,7 @@
     border-collapse: collapse;
     padding-left: 10px;
   }
+
   .avatar-uploader .el-upload {
     border: 1px dashed #409EFF;
     border-radius: 6px;
@@ -594,9 +614,11 @@
     position: relative;
     overflow: hidden;
   }
+
   .avatar-uploader .el-upload:hover {
     border-color: #409EFF;
   }
+
   .avatar-uploader-icon {
     font-size: 50px;
     color: #8c939d;
@@ -606,12 +628,14 @@
     text-align: center;
     margin-top: 30px;
   }
+
   .avatar {
     width: 230px;
     height: 280px;
     display: block;
   }
-  .photo{
+
+  .photo {
     position: relative;
     border: 1px dashed #d9d9d9;
     width: 230px;
