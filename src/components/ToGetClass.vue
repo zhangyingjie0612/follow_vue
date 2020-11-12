@@ -282,6 +282,7 @@
                       type: 'success'
                     });
                     this.dialogTableVisible = false;
+                    this.refreshList()
                   }else{
                     this.$message({
                       message: '修改失败',
@@ -323,6 +324,7 @@
                     type: 'success'
                   });
                   this.dialogTableVisible2 = false;
+                  this.refreshList()
                 }else{
                   this.$message({
                     message: '新增失败',
