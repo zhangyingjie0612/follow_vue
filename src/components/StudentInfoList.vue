@@ -372,7 +372,7 @@
     methods: {
       handleDialogClose() {
         this.resetForm('aData');
-        this.dialogTableVisible2 = false;
+        this.dialogTableVisible2 = false
         this.refreshList();
       },
       resetForm(formName) {
@@ -424,7 +424,7 @@
         this.getStudentsByLike();
       },
       handleAdd() {
-        this.$router.push({path: "/addstudent"});
+        this.$router.push({path: "/followMenu/addstudent"});
       },
       handleLook(index, row) {
         this.aData = row

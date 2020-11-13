@@ -235,7 +235,7 @@
         location.reload()
       },
       returnList(){
-        this.$router.push({path: "/studentInfoList"});
+        this.$router.push({path: "/followMenu/studentInfoList"});
       }
     },
     mounted(){
