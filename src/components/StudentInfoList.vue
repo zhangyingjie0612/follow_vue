@@ -372,7 +372,8 @@
     methods: {
       handleDialogClose() {
         this.resetForm('aData');
-        this.dialogTableVisible2 = false
+        this.dialogTableVisible2 = false;
+        this.refreshList();
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();

@@ -161,7 +161,7 @@
         totalClassesData: [],
         selectOptionsAll: [],//所有的班期
         selectTeacherName: [],//所有的教师姓名
-        pageSize: 5,
+        pageSize: 8,
         curPage: 1,
         formLabelWidth: '120px',
         nameStr: 'all',//对应filters的f1,用于发送axios请求
@@ -282,6 +282,7 @@
                       type: 'success'
                     });
                     this.dialogTableVisible = false;
+                    this.refreshList();
                   }else{
                     this.$message({
                       message: '修改失败',
@@ -323,6 +324,7 @@
                     type: 'success'
                   });
                   this.dialogTableVisible2 = false;
+                  this.refreshList();
                 }else{
                   this.$message({
                     message: '新增失败',
