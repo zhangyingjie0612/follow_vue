@@ -113,12 +113,12 @@
             }else {
               this.clearCookie();
             }
-            this.$store.commit('insertRoleId',res.data);
+            this.$store.commit('insertRoleid',res.data);
             /*以示成功*/
-            /*this.$message({
+            this.$message({
               message: '登陆成功！',
               type: 'success'
-            });*/
+            });
 
 
           }
