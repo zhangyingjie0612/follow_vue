@@ -9,7 +9,7 @@
           <template slot="header" slot-scope="scope">
             <span style="font-size: x-large">课程信息</span>
             <el-row :gutter="20">
-              <el-col :offset="12" :span="4">
+              <el-col :offset="9" :span="4">
                 <el-input v-model="filters.f1" placeholder="课程名称" ></el-input>
               </el-col>
               <el-col :span="4">

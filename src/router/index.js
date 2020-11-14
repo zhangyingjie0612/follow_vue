@@ -28,7 +28,7 @@ export default new Router({
   routes: [
     /*hmt测试用*/
     {
-      path: '/login',
+      path: '/',
       name: 'Login',
       component: Login
     },
@@ -51,7 +51,7 @@ export default new Router({
     /*hmt测试用*/
 
     {
-      path: '/',
+      path: '/helloWorld',
       name: 'HelloWorld',
       component: HelloWorld
     },

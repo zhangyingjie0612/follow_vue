@@ -9,8 +9,8 @@
         <h1>金桥学员跟踪系统</h1>
       </div>
       <el-form :model="loginForm" :rules="rules" class="login-page">
-        <el-form-item label="用户名：" prop="username">
-          <el-input v-model="loginForm.username"></el-input>
+        <el-form-item label="用户名：" prop="userName">
+          <el-input v-model="loginForm.userName"></el-input>
         </el-form-item>
         <el-form-item label="密码：" prop="pwd">
           <el-input type="password" v-model="loginForm.pwd"></el-input>
@@ -33,14 +33,16 @@
     name: "Login",
     data() {
       return {
+        roleId: '',
+        userId:'',
         loginForm: {
-          username: '',
+          userName: '',
           pwd: '',
-          logintime:''//随表单一起提交，在后端判断是否存改数据
+          loginTime:''//随表单一起提交，在后端判断是否存改数据
         },
         remember: true,
         rules: {
-          username: [
+          userName: [
             {required: true, message: '请输入用户名', trigger: 'blur'},
           ],
           pwd: [
@@ -67,11 +69,11 @@
         return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
       },
       //设置cookie
-      setCookie(username, pwd, days) {
+      setCookie(userName, pwd, days) {
         var exdate = new Date(); //获取时间
         exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * days); //保存的天数
         //字符串拼接cookie
-        window.document.cookie = "username" + "=" + username + ";path=/;expires=" + exdate.toString();
+        window.document.cookie = "userName" + "=" + userName + ";path=/;expires=" + exdate.toString();
         window.document.cookie = "pwd" + "=" + pwd + ";path=/;expires=" + exdate.toString();
       },
       //读取cookie
@@ -81,9 +83,9 @@
           for (var i = 0; i < arr.length; i++) {
             var arr2 = arr[i].split('='); //再次切割
             //判断查找相对应的值
-            if (arr2[0] === 'username') {
+            if (arr2[0] === 'userName') {
               //  console.log(arr2[1])
-              this.loginForm.username = arr2[1]; //保存到保存数据的地方
+              this.loginForm.userName = arr2[1]; //保存到保存数据的地方
             } else if (arr2[0] === 'pwd') {
               // console.log(arr2[1])
               this.loginForm.pwd = arr2[1];
@@ -94,33 +96,48 @@
 
       //清除cookie
       clearCookie: function () {
-        this.setCookie(this.loginForm.username,this.loginForm.pwd, -1); //修改2值都为空，天数为负1天就好了
+        this.setCookie(this.loginForm.userName,this.loginForm.pwd, -1); //修改2值都为空，天数为负1天就好了
       },
       //点击登录按钮
       submitForm() {
         var today = new Date();
         var today2 = this.formatDate(today);
-        this.loginForm.logintime=today2;
+        this.loginForm.loginTime=today2;
         axios.post("/user/getLogin", this.loginForm).then(res => {
-          if ("err" === res.data) {
+          if (null == res.data) {
             this.$message({
               message: '用户名或密码错误！',
               type: 'fail'
             });
           } else {
-            if (this.remember === true) {
-              this.setCookie(this.loginForm.username,this.loginForm.pwd,7);
+            if (this.remember == true) {
+              this.setCookie(this.loginForm.userName,this.loginForm.pwd,7);
             }else {
               this.clearCookie();
             }
-            this.$store.commit('insertRoleid',res.data);
+            //this.$store.commit('insertRoleId',res.data);
             /*以示成功*/
-            this.$message({
+            /*this.$message({
               message: '登陆成功！',
               type: 'success'
-            });
-
-
+            });*/
+            this.userId = res.data.userId;
+            this.roleId = res.data.roleId;
+            /*alert(this.userId);
+            alert(this.roleId);
+            alert(this.loginForm.userName);*/
+            sessionStorage.setItem("userId",this.userId);
+            sessionStorage.setItem("userName",this.loginForm.userName);
+            if(this.roleId==0){
+              sessionStorage.setItem("activeIndex","/followMenu/studentlist");
+              this.$router.push({path:"/followMenu/studentlist"})
+            }else if (this.roleId==1) {
+              sessionStorage.setItem("activeIndex","/followMenu/tStudentList");
+              this.$router.push({path:"/followMenu/tStudentList"})
+            }else{
+              sessionStorage.setItem("activeIndex","/followMenu/tStudentList");//项目经理跳转的主页
+              this.$router.push({path:"/followMenu/tStudentList"})//项目经理跳转的主页
+            }
           }
         })
       }
