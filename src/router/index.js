@@ -13,7 +13,10 @@ import TStuInfoList from '@/components/TStuInfoList'
 import TStudentInfoList from '@/components/TStudentInfoList'
 import TSchoolEvl from '@/components/TSchoolEvl'
 import ChangePwd from '@/components/ChangePwd'
-
+import Login from "../components/Login";
+import DeptTable from "../components/DeptTable";
+import CourseTable from "../components/CourseTable";
+import AddScore from "../components/AddScore";
 //修改首页面路由重复点击报错
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
@@ -23,6 +26,30 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
+    /*hmt测试用*/
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
+      path: '/deptTable',
+      name: 'DeptTable',
+      component: DeptTable
+    },
+    {
+      path: '/courseTable',
+      name: 'CourseTable',
+      component: CourseTable
+    },
+    {
+      path: '/addScore',
+      name: 'AddScore',
+      component: AddScore
+    },
+
+    /*hmt测试用*/
+
     {
       path: '/',
       name: 'HelloWorld',
@@ -78,7 +105,7 @@ export default new Router({
           name: 'ResetPwd',
           component: ResetPwd
         },
-        , {
+        {
           path: "ateacher",
           name: "Ateacher",
           component: Ateacher,
@@ -118,7 +145,25 @@ export default new Router({
           path: 'toGetClass',
           name: 'ToGetClass',
           component: ToGetClass
-        },]
+        },
+
+        /*hmt*/
+        {
+          path: 'deptTable',
+          name: 'DeptTable',
+          component: DeptTable
+        },
+        {
+          path: 'courseTable',
+          name: 'CourseTable',
+          component: CourseTable
+        },
+        {
+          path: 'addScore',
+          name: 'AddScore',
+          component: AddScore
+        },
+      ]
     }
   ]
 })
