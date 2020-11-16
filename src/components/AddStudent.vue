@@ -122,7 +122,6 @@
     </table>
     <br><br>
     <el-button type="primary" @click="goToSubmit('tableData')">提交</el-button>
-    <el-button @click="resetForm()">重置</el-button>
     <el-button @click="returnList()">返回</el-button>
   </el-form>
 </template>
@@ -222,7 +221,7 @@
             axios.post('/toAddStudent/',this.tableData).then(res => {
               if(res.data){
                 alert("新增成功")
-                location.reload()
+                this.$router.push({path: "/followMenu/studentInfoList"});
               }else{
                 alert("新增失败")
               }
@@ -232,10 +231,6 @@
             return false;
           }
         });
-      },
-      //重置表单
-      resetForm(ruleForm) {
-        location.reload()
       },
       //返回主页面
       returnList(){

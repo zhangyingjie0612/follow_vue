@@ -601,7 +601,8 @@
                   message: '修改成功',
                   type: 'success'
                 });
-                this.dialogTableVisible2=false
+                this.dialogTableVisible2=false;
+                this.refreshList();
               }else{
                 this.$message({
                   message: '修改失败',
