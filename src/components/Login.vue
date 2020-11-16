@@ -1,11 +1,10 @@
 <template>
   <el-container>
     <el-aside width="70%">
-      <img src="../assets/images/pic1.jpg"  height="610px" width="100%">
+      <img src="../assets/images/pic1.jpg"  height="710px" width="100%">
     </el-aside>
-
-    <el-main width="28%">
-      <div>
+    <el-main width="26%">
+      <div style="margin-top: 100px">
         <h1>金桥学员跟踪系统</h1>
       </div>
       <el-form :model="loginForm" :rules="rules" class="login-page">
@@ -33,6 +32,7 @@
     name: "Login",
     data() {
       return {
+        role:'',
         roleId: '',
         userId:'',
         loginForm: {
@@ -115,18 +115,19 @@
             }else {
               this.clearCookie();
             }
-            //this.$store.commit('insertRoleId',res.data);
-            /*以示成功*/
-            /*this.$message({
-              message: '登陆成功！',
-              type: 'success'
-            });*/
+
             this.userId = res.data.userId;
             this.roleId = res.data.roleId;
-            /*alert(this.userId);
-            alert(this.roleId);
-            alert(this.loginForm.userName);*/
+            //主页面要求存的数据
             sessionStorage.setItem("userId",this.userId);
+            if (this.roleId==0){
+              this.role = "管理员"
+            }else if (this.roleId==0){
+              this.role = "讲师"
+            }else {
+              this.role = "项目经理"
+            }
+            sessionStorage.setItem("role",this.role);
             sessionStorage.setItem("userName",this.loginForm.userName);
             if(this.roleId==0){
               sessionStorage.setItem("activeIndex","/followMenu/studentlist");

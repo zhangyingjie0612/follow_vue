@@ -5,10 +5,10 @@
       <el-table
         @selection-change="handleSelectionChange"
         :data="pageData" stripe border height="500px">
-        <!--复杂表头-->
+        <!--多级表头-->
         <el-table-column>
           <template slot="header" slot-scope="scope">
-            <span style="font-size: x-large">部门信息</span>
+            <span style="font-size: x-large">部门管理</span>
             <el-row :gutter="20">
               <el-col :offset="9" :span="4">
                 <el-input v-model="filters.f1" placeholder="部门名称"></el-input>
@@ -34,7 +34,7 @@
           <el-table-column label="操作" align="center">
             <template slot-scope="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <!--需要添加一个删除的功能-->
+
               <el-button size="small" type="danger"  @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
@@ -81,9 +81,6 @@
     <!--新增对话框-->
     <el-dialog title="新增" :visible.sync="dialogFormVisible2" width="500px" :before-close="handleDialogClose2">
       <el-form :model="formInfo2" :rules="addRules" ref="addForm">
-        <!--<el-form-item label="部门编号" :label-width="formLabelWidth">
-          <el-input v-model="formInfo2.deptId" autocomplete="off"></el-input>
-        </el-form-item>-->
         <el-form-item label="部门名称" :label-width="formLabelWidth" prop="deptName">
           <el-input v-model="formInfo2.deptName" autocomplete="off"></el-input>
         </el-form-item>
@@ -103,32 +100,33 @@
   export default {
     name: "DeptTable",
     data() {
-      /*var checkName = (rule, value, callback)=>{
-        if (!value){
-          return callback(new Error("部门名不为空"))
-        }
-        setTimeout(()=>{
-          this.checkAddName(this.formInfo2.deptName);
-          setTimeout(()=>{
-            if (this.ifNameExist){
-              callback(new Error('该部门名已存在'));
-            }
-          },50)
-        },100)
-      };*/
+      //新增表单名字重复的自定义验证
+      var checkName = (rule, value, callback)=>{
+        axios.get('/dept/checkAddName/'+this.formInfo2.deptName).then(res=>{
+          // alert(res.data);
+          if (res.data!="ok"){
+            callback(new Error('课程名重复'));
+          }else {
+            callback();
+          }
+        });
+      };
       return {
+        //编辑表单验证规则
         editRules:{
           deptName:[
             { required: true, message: '请输入部门名称', trigger: 'blur' },
           ],
         },
+        //新增表单验证规则
         addRules:{
           deptName:[
             { required: true, message: '请输入部门名称', trigger: 'blur' },
+            { validator: checkName, trigger: 'blur' },
           ],
         },
-
-        filters:{//模糊查询的过滤器，绑定input框
+        //模糊查询的过滤器，绑定input框
+        filters:{
           f1:"",
           f2:""
         },
@@ -145,9 +143,8 @@
         formInfo2: "",//新增表单数据
         deleteId:0,//删除id
         filter1:"all",//对应filters的f1,用于发送axios请求
-        filter2:"all",
-        ifExist:true,
-        ifNameExist:true,
+        filter2:"all",//对应filters的f2,用于发送axios请求
+        ifExist:true,//删除时判断是否存在成员
       }
     },
 
@@ -167,14 +164,6 @@
       /*根据表单的ref属性刷新表单*/
       resetForm(formName) {
         this.$refs[formName].resetFields();
-      },
-      //判断新增课程名是否重复
-      checkAddName(name){
-        axios.get('/dept/checkAddName/'+name).then(res=>{
-          if (res.data!=null){
-            this.ifNameExist=res.data;
-          }
-        });
       },
 
       //在删除前判断该部门是否存在成员，返回一个boolean值，若存在则提示无法删除

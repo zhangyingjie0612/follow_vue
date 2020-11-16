@@ -5,9 +5,10 @@
       <el-table
         @selection-change="handleSelectionChange"
         :data="pageData" stripe border height="540px">
+        <!--多级表头-->
         <el-table-column>
           <template slot="header" slot-scope="scope">
-            <span style="font-size: x-large">课程信息</span>
+            <span style="font-size: x-large">课程管理</span>
             <el-row :gutter="20">
               <el-col :offset="9" :span="4">
                 <el-input v-model="filters.f1" placeholder="课程名称" ></el-input>
@@ -22,10 +23,9 @@
               </el-col>
             </el-row>
           </template>
-
           <el-table-column type="selection" width="100"></el-table-column>
           <el-table-column type="index" label="序号" width="150" align="center"></el-table-column>
-          <el-table-column prop="courseid" label="课程编号" width="250" align="center"></el-table-column>
+          <el-table-column prop="courseId" label="课程编号" width="250" align="center"></el-table-column>
           <el-table-column prop="coursename" label="课程名称" width="250" align="center"></el-table-column>
           <el-table-column label="操作"  align="center">
             <template slot-scope="scope">
@@ -61,7 +61,7 @@
       <el-form :model="formInfo" :rules="editRules" ref="editForm">
         <el-col :offset="3" :span="18" prop>
           <el-form-item label="课程编号" :label-width="formLabelWidth">
-            <el-input v-model="formInfo.courseid" autocomplete="off" readonly></el-input>
+            <el-input v-model="formInfo.courseId" autocomplete="off" readonly></el-input>
           </el-form-item>
         </el-col>
         <el-col :offset="3" :span="18">
@@ -101,19 +101,33 @@
   export default {
     name: "CourseTable",
     data() {
+      //新增表单名字重复的自定义验证
+      var checkName = (rule, value, callback)=>{
+        axios.get('/course/checkAddName/'+this.formInfo2.coursename).then(res=>{
+          /*alert(res.data);*/
+          if (res.data!="ok"){
+            callback(new Error('课程名重复'));
+          }else {
+            callback();
+          }
+        });
+      };
       return {
+        //编辑表单验证规则
         editRules:{
           coursename:[
             { required: true, message: '请输入课程名称', trigger: 'blur' },
           ],
         },
+        //新增表单验证规则
         addRules:{
           coursename:[
             { required: true, message: '请输入课程名称', trigger: 'blur' },
+            { validator: checkName, trigger: 'blur' },
           ],
         },
-
-        filters:{//模糊查询的过滤器，绑定input框
+        //模糊查询的过滤器，绑定input框
+        filters:{
           f1:"",
           f2:"",
         },
@@ -130,9 +144,8 @@
         formInfo2:{},//新增表单数据
         deleteId:0,//删除id
         filter1:"all",//对应filters的f1,用于发送axios请求
-        filter2:"all",
-        ifExist:true,
-        ifNameExist:true,
+        filter2:"all",//对应filters的f2,用于发送axios请求
+        ifExist:true,//删除时判断是否存在成员
       }
     },
 
@@ -153,18 +166,10 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      //判断新增课程名是否重复
-      checkAddName(name){
-        axios.get('/course2/checkAddName/'+name).then(res=>{
-          if (res.data!=null){
-            this.ifNameExist=res.data;
-          }
-        });
-      },
 
       //在删除前判断该课程是否有班级在上，返回一个boolean值，若存在则提示无法删除
       checkIfExist(ids){
-        axios.get('/course2/checkIfExist/'+ids).then(res=>{
+        axios.get('/course/checkIfExist/'+ids).then(res=>{
           if (res.data!=null){
             this.ifExist=res.data;
           }
@@ -178,7 +183,7 @@
         }else {
           let ids = [];
           for (let i = 0; i < this.multipleSelection.length; i++) {
-            ids.push(this.multipleSelection[i].courseid);
+            ids.push(this.multipleSelection[i].courseId);
           }
           this.checkIfExist(ids);
           setTimeout(()=>{
@@ -205,10 +210,10 @@
         this.multiDeleteVisible=false;
         let ids = [];
         for (let i = 0; i < this.multipleSelection.length; i++) {
-          ids.push(this.multipleSelection[i].courseid);
+          ids.push(this.multipleSelection[i].courseId);
         }
         //console.log(ids)
-        axios.get('/course2/batchDeleteByIds/'+ids).then(res=>{
+        axios.get('/course/batchDeleteByIds/'+ids).then(res=>{
           if(res.data>0){
             alert("删除成功");
           }else{
@@ -235,7 +240,7 @@
       /*获取pagelist*/
       getPageListByLike() {
         this.checkFilter();
-        axios.get("/course2/getPageListByLike/" + this.curPage + "/" + this.pagesize + "/" + this.filter1+ "/" + this.filter2).then(res => {
+        axios.get("/course/getPageListByLike/" + this.curPage + "/" + this.pagesize + "/" + this.filter1+ "/" + this.filter2).then(res => {
           this.pageData = res.data
         })
       },
@@ -243,7 +248,7 @@
       /*获取总条数*/
       getTotalNumByLike(){
         this.checkFilter();
-        axios.get("/course2/getTotalNumByLike/"+this.filter1+"/" + this.filter2).then(res=>{
+        axios.get("/course/getTotalNumByLike/"+this.filter1+"/" + this.filter2).then(res=>{
           this.totalNum=res.data
         })
       },
@@ -270,7 +275,7 @@
       /*根据删除单条数据*/
       handleDelete(index,row){
         let ids = [];
-        ids.push(row.courseid);
+        ids.push(row.courseId);
         this.checkIfExist(ids);
         //异步数据有延迟，故等待50ms
         setTimeout(()=>{
@@ -284,8 +289,8 @@
             this.$confirm('确认删除该记录吗?', '提示', {
               type: 'warning'
             }).then(()=>{
-              this.deleteId=row.courseid;
-              axios.get("/course2/deleteByIdFake/"+this.deleteId).then(res=>{
+              this.deleteId=row.courseId;
+              axios.get("/course/deleteByIdFake/"+this.deleteId).then(res=>{
                 if (res.data > 0) {
                   this.$message({
                     message: '删除成功',
@@ -304,7 +309,7 @@
       onSubmit(formName) {
         this.$refs[formName].validate((valid)=> {
           if (valid) {
-            axios.post("/course2/update", this.formInfo).then(res => {
+            axios.post("/course/update", this.formInfo).then(res => {
               if (res.data > 0) {
                 this.dialogFormVisible = false;
                 this.$message({
@@ -321,7 +326,7 @@
       onSubmit2(formName){
         this.$refs[formName].validate((valid)=> {
           if (valid) {
-            axios.get("/course2/add/"+this.formInfo2.coursename).then(res => {
+            axios.get("/course/add/"+this.formInfo2.coursename).then(res => {
               if (res.data > 0) {
                 this.dialogFormVisible2 = false;
                 this.$message({
