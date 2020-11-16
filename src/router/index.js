@@ -17,7 +17,7 @@ import Login from "../components/Login";
 import DeptTable from "../components/DeptTable";
 import CourseTable from "../components/CourseTable";
 import AddScore from "../components/AddScore";
-import JobEvlOption from "../components/JobEvlOption";
+
 //修改首页面路由重复点击报错
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
@@ -39,11 +39,7 @@ const router = new Router({
       component: Login
     },
 
-    {
-      path: '/JobEvlOption',
-      name: 'JobEvlOption',
-      component: JobEvlOption
-    },
+
     /*hmt测试用*/
 
     {
