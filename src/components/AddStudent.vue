@@ -149,9 +149,9 @@
           note:'',
           className:''
         },
-        selectOptionsAll:[],
-        imageUrl: '',
-        imgPath: '',
+        selectOptionsAll:[],//获取所有的班期名称
+        imageUrl: '',//回显的照片路径
+        imgPath: '',//返回照片的名字
         rules: {
           stuName: [
             { required: true, message: '请输入学生姓名', trigger: 'blur' }
@@ -192,6 +192,7 @@
       }
     },
     methods:{
+      //获取所有的班期名称
       getClassName(){
         axios.get('/toGetClassName/').then(res => {
           this.selectOptionsAll = res.data
@@ -213,6 +214,7 @@
         }
         return isJPG && isLt2M;
       },
+      //学生新增
       goToSubmit(tableData){
         this.$refs[tableData].validate((valid) => {
           if (valid) {
@@ -231,9 +233,11 @@
           }
         });
       },
+      //重置表单
       resetForm(ruleForm) {
         location.reload()
       },
+      //返回主页面
       returnList(){
         this.$router.push({path: "/followMenu/studentInfoList"});
       }

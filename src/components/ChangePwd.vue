@@ -2,7 +2,7 @@
   <div>
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" style="width: 24%;margin-left: 36%" >
       <el-form-item label="用户名" prop="userName">
-        <el-input type="text" v-model="ruleForm.userName" autocomplete="off"></el-input>
+        <el-input type="text" v-model="ruleForm.userName" autocomplete="off" :readonly="true"></el-input>
       </el-form-item>
       <el-form-item label="旧密码" prop="oldPwd">
         <el-input type="password" v-model.number="ruleForm.oldPwd"autocomplete="off"></el-input>

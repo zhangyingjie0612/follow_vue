@@ -2,7 +2,7 @@
   <div>
     <el-table
       :data="tableData"
-      style="width: 1330px;margin-left: 95px;height: 650px;margin-top: 30px"
+      style="width: 1330px;margin-left: 4%;height: 650px;margin-top: 30px"
       align="center">
       <el-table-column>
         <template slot="header" slot-scope="scope">
@@ -25,27 +25,32 @@
         <el-table-column
           type="index"
           label="序号"
-          width="50">
+          width="50"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="stuname"
           label="姓名"
-          width="100">
+          width="100"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="sex"
           label="性别"
-          width="50">
+          width="50"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="university"
           label="毕业院校"
-          width="140">
+          width="140"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="birthplace"
           label="籍贯"
-          width="100">
+          width="100"
+          align="center">
         </el-table-column>
         <el-table-column label="培训期间测试成绩" align="center">
           <template  v-for='(one) in scoreData'>
@@ -54,34 +59,40 @@
               :label="one.label"
               :key="'z'+one.prop"
               :formatter="formatNull"
-              width="80px">
+              width="80px"
+              align="center">
             </el-table-column>
           </template>
         </el-table-column>
         <el-table-column
           prop="evlScore"
           label="学校评价"
-          width="80">
+          width="80"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="s1"
           label="转正评价"
-          width="80">
+          width="80"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="s2"
           label="一年评价"
-          width="80">
+          width="80"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="s3"
           label="两年评价"
-          width="80">
+          width="80"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="s4"
           label="三年评价"
-          width="80">
+          width="80"
+          align="center">
         </el-table-column>
       </el-table-column>
     </el-table>
@@ -113,7 +124,7 @@
         pageSize: 10,
         curPage: 1,
         totalStudentsData: [],
-        selectOptionsAll:[],
+        selectOptionsAll:[],//所有的班期名称
         className:'all',
         nameStr:'all',//对应filters的f1,用于发送axios请求
         scoreData:'',
@@ -137,12 +148,14 @@
           this.scoreData=res.data
         })
       },
+      //获取班期名称
       getClassName(){
         this.checkFilter2();
         axios.get('/toGetClassName/').then(res => {
           this.selectOptionsAll = res.data
         })
       },
+      //姓名查询过滤器
       checkFilter(){
         if (""!==this.filters.f1){
           this.nameStr=this.filters.f1
@@ -150,6 +163,7 @@
           this.nameStr="all"
         }
       },
+      //班期查询过滤器
       checkFilter2(){
         if (""!==this.filters.f2){
           this.className=this.filters.f2

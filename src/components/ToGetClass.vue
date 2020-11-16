@@ -3,7 +3,7 @@
     <el-table
       :data="tableData"
       height="630"
-      style="width:1010px;margin-left: 260px;margin-top: 40px" align="center">
+      style="width:1190px;margin-left: 8%;margin-top: 40px" align="center">
       <el-table-column>
         <template slot="header" slot-scope="scope">
           <span style="font-size: x-large">班期管理</span>
@@ -26,19 +26,22 @@
         <el-table-column
           type="index"
           label="序号"
-          width="150">
+          width="180"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="className"
           label="班期"
-          width="300">
+          width="350"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="userName"
           label="教师姓名"
-          width="300">
+          width="350"
+          align="center">
         </el-table-column>
-        <el-table-column label="操作" align="center" width="250">
+        <el-table-column label="操作" align="center" width="300">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -174,15 +177,17 @@
         addData1:[],
         editData:[],//修改班期对应的课程信息的数据
         editData1:[],
-        maxClassId:'',
-        addClassName:'',
+        maxClassId:'',//新增时用
+        addClassName:'',//新增时用
         rules: {
           userName: [
             { required: true, message: '请选择讲师', trigger: 'change' }
           ],
+          //新增班期的课程的表单验证
           checkedCourses2:[
             { validator: checkCourses2, trigger: 'change' }
           ],
+          //编辑班期的课程的表单验证
           checkedCourses:[
             { validator: checkCourses, trigger: 'change' }
           ]
@@ -190,6 +195,7 @@
       }
     },
     methods: {
+      //获取最大的班期id，新增时用
       getMaxClassId(){
         axios.get('/toGetMaxClassId/').then(res => {
           this.maxClassId = res.data;
@@ -197,11 +203,13 @@
           this.addClassName="金桥工程"+cla+"期";
         })
       },
+      //获取所有的课程名称，赋值给coursesSelection
       getCourseName(){
         axios.get('/getAllCourseName/').then(res => {
           this.coursesSelection = res.data
         })
       },
+      //获取所有的班期，赋值给selectOptionsAll
       getClassName() {
         this.checkFilter2();
         axios.get('/toGetClassName/').then(res => {
@@ -209,11 +217,13 @@
           this.selectOptionsAll.push({className: "全部列表"})
         })
       },
+      //获取所有的老师姓名，赋值给selectTeacherName
       getTeacherName() {
         axios.get('/getAllTeacherName/').then(res => {
           this.selectTeacherName = res.data
         })
       },
+      //模糊查询的姓名搜索字段的过滤器
       checkFilter() {
         if ("" !== this.filters.f1) {
           this.nameStr = this.filters.f1
@@ -221,6 +231,7 @@
           this.nameStr = "all"
         }
       },
+      //下拉框查询时班期名称的过滤器
       checkFilter2() {
         if ("" !== this.filters.f2 && this.filters.f2 !== "全部列表") {
           this.className = this.filters.f2
@@ -236,24 +247,28 @@
         this.getClasses();
         this.getClassesNum();
       },
+      //带分页的列表
       getClasses() {
         this.checkFilter();
         axios.get('/getClassesList/' + this.curPage + '/' + this.pageSize + '/' + this.nameStr + '/' + this.className).then(res => {
           this.tableData = res.data;
         })
       },
+      //个数
       getClassesNum() {
         this.checkFilter();
         axios.get('/getClassesCount/' + this.nameStr + '/' + this.className).then(res => {
           this.totalClassesData = res.data
         })
       },
+      //编辑，获取该行数据，赋值给aData
       handleEdit(index, row) {
         this.aData = row;
         axios.get('/toGetSelectedCourse/' + this.aData.className).then(res => {
           this.checkedCourses=res.data
         });
       },
+      //根据handleEdit获取的行数据进行编辑
       goToSubmit(aData){
         this.$refs[aData].validate((valid) => {
           if (valid) {
@@ -263,9 +278,11 @@
                 this.aData.userId=this.selectTeacherName[i].userId
               }
             }
+            //后台需要一个list，包含（classId,courseId），获取该list，将其传给后台
             for(let i in this.checkedCourses){
               for (let j in this.coursesSelection) {
                 if (this.checkedCourses[i]==this.coursesSelection[j].courseName){
+                  //json.parse是将右边的数组的值赋给左边的数组
                   this.editData[i] = JSON.parse(JSON.stringify({classId:this.aData.classId,courseId:this.coursesSelection[j].courseId}));
                 }
               }
@@ -298,6 +315,7 @@
           }
         });
       },
+      //班期新增
       handleAdd(aData1) {
         this.$refs[aData1].validate((valid) => {
           if (valid) {
