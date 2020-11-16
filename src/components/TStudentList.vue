@@ -2,7 +2,7 @@
   <div>
     <el-table
       :data="tableData"
-      style="width: 90%;margin-left: 5%;height: 750px"
+      style="width: 90%;margin-left: 5%;height: 650px"
       align="center">
       <el-table-column>
         <template slot="header" slot-scope="scope">
@@ -31,7 +31,7 @@
         <el-table-column
           prop="stuname"
           label="姓名"
-          width="110">
+          width="80">
         </el-table-column>
         <el-table-column
           prop="sex"
@@ -41,7 +41,7 @@
         <el-table-column
           prop="university"
           label="毕业院校"
-          width="150">
+          width="130">
         </el-table-column>
         <el-table-column
           prop="birthplace"
@@ -55,7 +55,7 @@
               :label="one.label"
               :key="'z'+one.prop"
               :formatter="formatNull"
-              width="100px">
+              width="80px">
             </el-table-column>
           </template>
         </el-table-column>
