@@ -3,7 +3,7 @@
     <el-table
       :data="tableData"
       height="630"
-      style="width:1208px;margin-left: 170px;margin-top: 40px"
+      style="width:1208px;margin-left: 8%;margin-top: 40px"
       align="center">
       <el-table-column>
         <template slot="header" slot-scope="scope">
@@ -69,8 +69,8 @@
     name: "ResetPwd",
     data() {
       return {
-        tableData: [],
-        totalUsersData: [],
+        tableData: [],//查询出来的所有数据
+        totalUsersData: [],//该集合的个数为查询结果的个数
         pageSize: 5,
         curPage: 1,
         userId: '',
@@ -81,6 +81,7 @@
       }
     },
     methods: {
+      //模糊查询的姓名的过滤器
       checkFilter() {
         if ("" !== this.filters.f1) {
           this.nameStr = this.filters.f1
@@ -88,18 +89,21 @@
           this.nameStr = "all"
         }
       },
+      //带分页
       getUserPwd() {
         this.checkFilter();
         axios.get('/getUser/' + this.curPage + '/' + this.pageSize+ '/' + this.nameStr).then(res => {
           this.tableData = res.data
         })
       },
+      //数量
       getUserPwd2() {
         this.checkFilter();
         axios.get('/getUser2/'+ this.nameStr).then(res => {
           this.totalUsersData = res.data
         })
       },
+      //根据userId重置密码
       handleReset(index, row) {
         this.$confirm('确定重置吗?', '提示', {
           type: 'warning'

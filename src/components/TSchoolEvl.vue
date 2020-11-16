@@ -46,11 +46,11 @@
       </el-table-column>
       <el-table-column label="操作" align="center" prop="evlScore">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary":disabled="scope.row.evlScore != '未评价'"
+          <el-button size="mini" type="primary" :disabled="scope.row.evlScore != '未评价'"
                      @click="handleEdit1(scope.$index, scope.row)"
                      >评价</el-button>
-          <el-button size="mini" type="success":disabled="scope.row.evlScore == '未评价'"
-                     @click="dialogTableVisible1 = true;handleEdit(scope.$index, scope.row)"
+          <el-button size="mini" type="success" :disabled="scope.row.evlScore == '未评价'"
+                     @click="dialogTableVisible1 = true,handleEdit(scope.$index, scope.row)"
                      >修改</el-button>
         </template>
       </el-table-column>

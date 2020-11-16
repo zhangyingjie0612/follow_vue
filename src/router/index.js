@@ -13,6 +13,10 @@ import TStuInfoList from '@/components/TStuInfoList'
 import TStudentInfoList from '@/components/TStudentInfoList'
 import TSchoolEvl from '@/components/TSchoolEvl'
 import ChangePwd from '@/components/ChangePwd'
+import Login from "../components/Login";
+import DeptTable from "../components/DeptTable";
+import CourseTable from "../components/CourseTable";
+import AddScore from "../components/AddScore";
 
 //修改首页面路由重复点击报错
 const originalPush = Router.prototype.push
@@ -21,10 +25,25 @@ Router.prototype.push = function push(location) {
 }
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
+    /*hmt测试用*/
     {
       path: '/',
+      redirect: '/login'
+    },
+
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+
+
+    /*hmt测试用*/
+
+    {
+      path: '/helloWorld',
       name: 'HelloWorld',
       component: HelloWorld
     },
@@ -78,7 +97,7 @@ export default new Router({
           name: 'ResetPwd',
           component: ResetPwd
         },
-        , {
+        {
           path: "ateacher",
           name: "Ateacher",
           component: Ateacher,
@@ -118,7 +137,39 @@ export default new Router({
           path: 'toGetClass',
           name: 'ToGetClass',
           component: ToGetClass
-        },]
+        },
+
+        /*hmt*/
+        {
+          path: 'deptTable',
+          name: 'DeptTable',
+          component: DeptTable
+        },
+        {
+          path: 'courseTable',
+          name: 'CourseTable',
+          component: CourseTable
+        },
+        {
+          path: 'addScore',
+          name: 'AddScore',
+          component: AddScore
+        },
+      ]
     }
   ]
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') { // 当路由为login时就直接下一步操作
+    next();
+  } else { // 否则就需要判断
+    if(sessionStorage.userName){  // 如果有用户名就进行下一步操作
+      next()
+    }else{
+      next({path: '/login'})  // 没有用户名就跳转到login页面
+    }
+  }
 })
+
+export default router

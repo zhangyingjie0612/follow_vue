@@ -5,7 +5,7 @@
       height="650"
       border
       @selection-change="handleSelectionChange"
-      style="width: 80%;margin-left: 10%;margin-top: 2%">
+      style="width: 90%;margin-left: 5%;margin-top: 2%">
       <el-table-column>
         <template slot="header" slot-scope="scope">
           <span style="font-size: x-large">学员基本信息</span>
@@ -20,42 +20,50 @@
         </template>
         <el-table-column
           type="selection"
-          width="55">
+          width="55"
+          align="center">
         </el-table-column>
         <el-table-column
           type="index"
           label="序号"
-          width="60">
+          width="60"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="stuName"
           label="姓名"
-          width="100">
+          width="120"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="sex"
           label="性别"
-          width="60">
+          width="80"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="university"
           label="毕业院校"
-          width="150">
+          width="180"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="className"
           label="班期"
-          width="130">
+          width="150"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="deptName"
           label="部门"
-          width="180">
+          width="180"
+          align="center">
         </el-table-column>
         <el-table-column
           prop="job"
           label="职位"
-          width="180">
+          width="180"
+          align="center">
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
@@ -283,14 +291,14 @@
       return {
         formLabelWidth: "100px",
         filters: {//模糊查询的过滤器，绑定input框
-          f1: "",
-          f2: "",
-          f3: ""
+          f1: "",//对应学生姓名
+          f2: "",//对应部门名称
+          f3: ""//对应工作名称
         },
         tableData: [],
         pageSize: 8,
         curPage: 1,
-        totalStudentsData: [],
+        totalStudentsData: [],//集合的数量为查询出来的个数
         multipleSelection: [],//批量删除选择的复选框数组
         dialogTableVisible: false,//查看
         dialogTableVisible2: false,//隐藏编辑对话框
@@ -320,12 +328,12 @@
         sName: 'all',//对应filters的f1,用于发送axios请求
         dept: 'all',
         jobStr: 'all',
-        imageUrl: '',
-        imgPath: '',
-        years: '',
-        months: '',
+        imageUrl: '',//回显的照片路径
+        imgPath: '',//返回照片的名字
+        years: '',//判断学生状态时用
+        months: '',//判断学生状态时用
         initState: 5,
-        sumMonths:'',
+        sumMonths:'',//判断学生状态时用
         rules: {
           stuName: [
             {required: true, message: '请输入学生姓名', trigger: 'blur'}
@@ -370,47 +378,56 @@
       }
     },
     methods: {
+      //手动关闭对话框
       handleDialogClose() {
         this.resetForm('aData');
         this.dialogTableVisible2 = false
         this.refreshList();
       },
+      //重置表单
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
+      //获取所有的部门名称
       getAllDeptName() {
         axios.get('/toGetAllDeptName/').then(res => {
           this.selectOptionsAll2 = res.data
         })
       },
+      //获取所有的课程名称
       getClassName() {
         axios.get('/toGetClassName/').then(res => {
           this.selectOptionsAll = res.data
         })
       },
       checkFilter() {
+        //对应学生姓名
         if ("" !== this.filters.f1) {
           this.sName = this.filters.f1
         } else {
           this.sName = "all"
         }
+        //对应部门名称
         if ("" !== this.filters.f2) {
           this.dept = this.filters.f2
         } else {
           this.dept = "all"
         }
+        //对应工作名称
         if ("" !== this.filters.f3) {
           this.jobStr = this.filters.f3
         } else {
           this.jobStr = "all"
         }
       },
+      //分页
       getStudentsByPage() {
         this.checkFilter();
         axios.get('/getStudentsByPage/' + this.curPage + '/' + this.pageSize + '/' + this.sName + '/' + this.dept + '/' + this.jobStr).then(res => {
           this.tableData = res.data
         })
       },
+      //获取数量
       getStudentsByLike() {
         this.checkFilter();
         axios.get('/getStudentsByLike/' + this.sName + '/' + this.dept + '/' + this.jobStr).then(res => {
@@ -423,9 +440,11 @@
         this.getStudentsByPage();
         this.getStudentsByLike();
       },
+      //新增，跳转路由
       handleAdd() {
         this.$router.push({path: "/followMenu/addstudent"});
       },
+      //查看，获取当前行的数据
       handleLook(index, row) {
         this.aData = row
       },
@@ -510,15 +529,17 @@
           })
         }
       },
+      //编辑学生信息
       handleEdit(index, row) {
         this.aData = row;
         this.imageUrl = this.aData.photo
       },
+      //编辑对话框的提交
       goToSubmit(aData) {
         this.$refs[aData].validate((valid) => {
           if (valid) {
-            if ("../../static/imgs/" == this.imageUrl.substring(0,18)) {
-              this.imageUrl=this.imageUrl.substring(18)
+            if ("http://localhost:8080/images/" == this.imageUrl.substring(0,29)) {
+              this.imageUrl=this.imageUrl.substring(29);
               this.aData.photo=this.imageUrl
             }else {
               this.aData.photo=this.imgPath
