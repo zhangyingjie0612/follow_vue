@@ -1,52 +1,56 @@
 <template>
   <div>
+    <div  id="div1">
+      <span id="span1">学员详细信息</span>
+    </div>
+    <el-button style="float: left" @click="returnList()">返回</el-button>
     <table style="width: 1200px;margin-left: 10%" align="center">
       <tr>
         <td style="font-weight: bolder;font-size:16px;width: 120px">姓名</td>
-        <td width="200">{{aData.stuName}}</td>
+        <td width="200">{{stuData.stuName}}</td>
         <td style="font-weight: bolder;font-size:16px;width: 130px">性别</td>
-        <td width="200">{{aData.sex}}</td>
+        <td width="200">{{stuData.sex}}</td>
         <td style="font-weight: bolder;font-size:16px;width: 130px">民族</td>
-        <td width="200">{{aData.nation}}</td>
+        <td width="200">{{stuData.nation}}</td>
         <td rowspan="5" width="255px">
           <div class="photo">
-            <img  v-if="aData.photo" :src="aData.photo" class="avatar">
+            <img  v-if="stuData.photo" :src="stuData.photo" class="avatar">
           </div>
         </td>
       </tr>
       <tr>
         <td style="font-size:16px;font-weight: bolder">出生年月</td>
-        <td>{{aData.birthday}}</td>
+        <td>{{stuData.birthday}}</td>
         <td style="font-size:16px;font-weight: bolder">籍贯</td>
-        <td>{{aData.birthplace}}</td>
+        <td>{{stuData.birthplace}}</td>
         <td style="font-size:16px;font-weight: bolder">婚否</td>
-        <td>{{aData.marry}}</td>
+        <td>{{stuData.marry}}</td>
       </tr>
       <tr>
         <td style="font-size:16px;font-weight: bolder">联系电话</td>
-        <td>{{aData.telephone}}</td>
+        <td>{{stuData.telephone}}</td>
         <td style="font-size:16px;font-weight: bolder">身份证号码</td>
-        <td colspan="3">{{aData.idCard}}</td>
+        <td colspan="3">{{stuData.idCard}}</td>
       </tr>
       <tr>
         <td style="font-size:16px;font-weight: bolder">毕业院校</td>
-        <td>{{aData.university}}</td>
+        <td>{{stuData.university}}</td>
         <td style="font-size:16px;font-weight: bolder">专业</td>
-        <td colspan="3">{{aData.major}}</td>
+        <td colspan="3">{{stuData.major}}</td>
       </tr>
       <tr>
         <td style="font-size:16px;font-weight: bolder">入职时间</td>
-        <td>{{aData.jobtime}}</td>
+        <td>{{stuData.jobtime}}</td>
         <td style="font-size:16px;font-weight: bolder">班期</td>
-        <td>{{aData.className}}</td>
+        <td>{{stuData.className}}</td>
         <td style="font-size:16px;font-weight: bolder">部门名称</td>
-        <td>{{aData.deptname}}</td>
+        <td>{{stuData.deptname}}</td>
       </tr>
       <tr>
         <td style="font-size:16px;font-weight: bolder">职位</td>
-        <td>{{aData.job}}</td>
+        <td>{{stuData.job}}</td>
         <td style="font-weight: bolder">备注</td>
-        <td colspan="4">{{aData.note}}</td>
+        <td colspan="4">{{stuData.note}}</td>
       </tr>
     </table>
     <el-table
@@ -104,6 +108,7 @@
           </td>
         </tr>
       </table>
+    <br>
   </div>
 </template>
 
@@ -113,17 +118,17 @@
     name: "TStudentInfoList"
     ,data() {
       return {
-        scoreData:'',
-        evlContent:'',
+        scoreData:'',//成绩
+        evlContent:'',//评价
         nameStr:'',
-        aData:'',
-        tableData: []
+        stuData:'',
+        tableData: []//学生信息
       }
     },
     methods:{
-      /*获取课程名和课程id，发送班级、姓名*/
+      /*获取课程名和课程id和成绩，发送班级、姓名*/
       getCourse(){
-        axios.get("/toDoGetAllCourses/" + this.aData.className).then(res=>{
+        axios.get("/toDoGetAllCourses/" + this.stuData.className).then(res=>{
           this.scoreData=res.data
         })
       },
@@ -136,17 +141,15 @@
           return cellValue;
         }
       },
-      //分页+模糊查询
+      //获取学生信息
       getStudents() {
-        this.nameStr=this.aData.stuName
-        axios.get('/getStudentList2/' + this.nameStr+'/'+this.aData.className).then(res => {
+        this.nameStr=this.stuData.stuName
+        axios.get('/getStudentList3/' + this.nameStr+'/'+this.stuData.className).then(res => {
           this.tableData = res.data
-
           for (var i in this.tableData) {
             if (this.tableData[i].evlContent == null) (
               this.tableData[i].evlContent="未评价"
             )
-
             if (this.tableData[i].evlScore == null) (
               this.tableData[i].evlScore="未评价"
             )
@@ -155,10 +158,16 @@
           console.log(this.tableData)
         })
       },
+      //接受学生信息
       getData(){
-        this.aData=this.$route.query.aData
-        console.log(this.$route.query.aData)
+        this.stuData=this.$route.query.stuData
+        console.log(this.$route.query.stuData)
 
+      },
+      //返回
+      returnList(){
+        console.log(this.stuData.className)
+        this.$router.push({path: "/followMenu/tStuInfoList",query:{className:this.stuData.className}});
       }
     },
     mounted() {
@@ -170,18 +179,6 @@
 </script>
 
 <style scoped>
-  /*table, td {*/
-  /*  border: 2px solid #EBEEF5;*/
-  /*  border-collapse: collapse;*/
-  /*  padding-left: 10px;*/
-  /*}*/
-  /*input{*/
-  /*  height: 100%;*/
-  /*  width: 100%;*/
-  /*  border: none;*/
-  /*}*/
-
-
 
 
   * {
@@ -202,7 +199,7 @@
     width: 230px;
     height: 250px;
     line-height: 250px;
-    margin-top: -45px;
+    margin-top: -0px;
     margin-left: 1px;
   }
   .avatar-uploader .el-upload {
@@ -223,5 +220,15 @@
   .td-explainleft{vertical-align:top;position:relative;}
   .td-explainleft div{position:absolute; left:0; top:0;}
 
-
+  #span1{
+    font-size: 37px;
+  }
+  #div1{
+    margin: 0;
+    padding: 0;
+    height: 70px;
+    font-size: 30px;
+    background-color: #F5F5F5;
+    line-height:70px;
+  }
 </style>

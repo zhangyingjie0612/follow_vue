@@ -2,7 +2,7 @@
   <div>
     <el-table
       :data="tableData"
-      style="width: 90%;margin-left: 5%;height: 750px"
+      style="width: 90%;margin-left: 5%;height: 700px;margin-top: 2%">
       align="center">
       <el-table-column>
         <template slot="header" slot-scope="scope">
@@ -26,64 +26,71 @@
         <el-table-column
           type="index"
           label="序号"
-          width="50">
+          align="center"
+        width="60">
         </el-table-column>
         <el-table-column
           prop="stuname"
           label="姓名"
-          width="110">
+          align="center"
+          width="">
         </el-table-column>
         <el-table-column
           prop="sex"
+          align="center"
           label="性别"
-          width="70">
+          width="">
         </el-table-column>
         <el-table-column
           prop="university"
+          align="center"
           label="毕业院校"
-          width="150">
+          width="">
         </el-table-column>
         <el-table-column
           prop="birthplace"
+          align="center"
           label="籍贯"
-          width="115">
+          width="">
         </el-table-column>
         <el-table-column label="培训期间测试成绩" width="480" align="center">
           <template  v-for='(one) in scoreData'>
             <el-table-column
+              align="center"
               :prop="'z'+one.prop"
               :label="one.label"
               :key="'z'+one.prop"
               :formatter="formatNull"
-              width="100px">
+              width="120">
             </el-table-column>
           </template>
         </el-table-column>
         <el-table-column
+          align="center"
           prop="evlScore"
           label="学校评价"
-          width="80">
+          width="100">
         </el-table-column>
-        <el-table-column
-          prop="s1"
-          label="转正评价"
-          width="80">
-        </el-table-column>
-        <el-table-column
-          prop="s2"
-          label="一年评价"
-          width="80">
-        </el-table-column>
-        <el-table-column
-          prop="s3"
-          label="两年评价"
-          width="80">
-        </el-table-column>
-        <el-table-column
-          prop="s4"
-          label="三年评价"
-          width="80">
-        </el-table-column>
+<!--        <el-table-column-->
+<!--          prop="s1"-->
+<!--          label="转正评价"-->
+<!--          width="80">-->
+<!--        </el-table-column>-->
+<!--        <el-table-column-->
+<!--          prop="s2"-->
+<!--          label="一年评价"-->
+<!--          width="80">-->
+<!--        </el-table-column>-->
+<!--        <el-table-column-->
+<!--          prop="s3"-->
+<!--          label="两年评价"-->
+<!--          width="80">-->
+<!--        </el-table-column>-->
+<!--        <el-table-column-->
+<!--          prop="s4"-->
+<!--          label="三年评价"-->
+<!--          width="80">-->
+<!--        </el-table-column>-->
       </el-table-column>
     </el-table>
     <div>
@@ -110,12 +117,12 @@
           f1:"",
           f2:""
         },
-        userid:"2",
-        tableData: [],
+        userid:sessionStorage.getItem("userId"),//老师的Id
+        tableData: [],//学生数据
         pageSize: 10,
         curPage: 1,
         totalStudentsData: [],
-        selectOptionsAll:[],
+        selectOptionsAll:[],//老师教的班期
         className:'all',
         nameStr:'all',//对应filters的f1,用于发送axios请求
         scoreData:'',
@@ -138,6 +145,7 @@
           this.scoreData=res.data
         })
       },
+      //获取班级
       getClassName(){
         this.checkFilter2();
         axios.get('/getClassName/'+this.userid).then(res => {
@@ -145,6 +153,7 @@
           console.log(this.selectOptionsAll)
         })
       },
+      //查询方法给名字赋值
       checkFilter(){
         if (""!==this.filters.f1){
           this.nameStr=this.filters.f1
@@ -152,6 +161,7 @@
           this.nameStr="all"
         }
       },
+      //查询方法给班级赋值
       checkFilter2(){
         if (""!==this.filters.f2){
           this.className=this.filters.f2
@@ -161,6 +171,7 @@
           this.className="all"
         }
       },
+      //初始加载的方法
       refreshList(){
         this.getCourse();
         this.getClassName();

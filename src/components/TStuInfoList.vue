@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-table
-      :data="empData"
+      :data="studentData"
       stripe
-      style="width: 90%;margin-left: 5%;height: 750px">
+      style="width: 90%;margin-left: 5%;height: 700px;margin-top: 2%">
       <el-table-column>
         <template slot="header" slot-scope="scope">
           <span style="font-size: x-large">学员基本信息</span>
@@ -30,7 +30,7 @@
         label="姓名"
         align="center">
         <template slot-scope="scope" >
-          <el-link size="mini" @click="dialogTableVisible = true;handleEdit1(scope.$index, scope.row)">{{scope.row.stuName}}</el-link>
+          <el-link size="mini" @click="handleEdit1(scope.$index, scope.row)">{{scope.row.stuName}}</el-link>
         </template>
       </el-table-column>
       <el-table-column
@@ -59,11 +59,6 @@
       label="联系方式"
       align="center">
     </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button size="mini" @click="dialogTableVisible = true;handleEdit1(scope.$index, scope.row)">查看</el-button>
-        </template>
-      </el-table-column>
       </el-table-column>
     </el-table>
     <div>
@@ -72,7 +67,7 @@
         :current-page.sync="curPage"
         :page-size="pagesize"
         :pager-count="7"
-        :total="totalEmpData.length"
+        :total="totalStuData.length"
         background
         layout="total, prev, pager, next, jumper">
       </el-pagination>
@@ -89,19 +84,18 @@
         return {
           stuname:"all",//对应filters的f1,用于发送axios请求
           classname:"all",
-          dialogTableVisible: false,
-          pagesize:5,
+          pagesize:10,
           curPage:1,
-          userid:"2",
+          userid:sessionStorage.getItem("userId"),
           //分页员工数据
-          empData: [],
+          studentData: [],//学生信息
           classDate:[],
-          aData:'',
+          stuData:'',//传输到查看弹框的学生信息
           filters:{//模糊查询的过滤器，绑定input框
             f1:"",
             f2:""
           },
-          totalEmpData: []
+          totalStuData: []//分页学生信息
         }
       },
       methods:{
@@ -118,19 +112,19 @@
             this.classname="all"
           }
         },
-        //    获取分页员工列表
+        //    获取分页学生列表
         getStuListByPage(){
           this.checkFilter();
           axios.get('/getAllStuByPage/'+this.curPage+'/'+this.pagesize+'/'+this.stuname+'/'+ this.classname).then(res => {
-            this.empData = res.data
+            this.studentData = res.data
 
           })
         },
-        //  获取产品列表
+        //  获取学生列表
         getStuListByLike(){
           this.checkFilter();
           axios.get('/getAllStuByLike/'+this.stuname+'/'+ this.classname).then(res =>{
-            this.totalEmpData = res.data
+            this.totalStuData = res.data
           })
         },
         handleEdit(index, row) {
@@ -141,8 +135,8 @@
 
         }, handleEdit1(index, row) {
           // console.log( row);
-          // this.aData=row
-          this.$router.push({path:"/followMenu/tStudentInfoList",query:{aData:row}})
+          // this.stuData=row
+          this.$router.push({path:"/followMenu/tStudentInfoList",query:{stuData:row}})
         },
 
         //获取下拉框中内容
@@ -160,6 +154,13 @@
         },
       },
       mounted() {
+          // console.log(this.$route.query.className)
+        //接受查看页面返回的班期
+        this.filters.f2=this.$route.query.className
+        if (this.filters.f2==null) {
+          this.filters.f2=""
+        }
+        console.log(this.filters.f2)
         this.getStuListByPage();
         this.getStuListByLike();
         this.getOptions();
@@ -180,6 +181,11 @@
   .tr td{
     height: 35px;
   }
+  a:link
+  { /*没有被访问时*/
+    color : blue;
+  }
+
   .photo{
     position: relative;
     border: 1px dashed #d9d9d9;

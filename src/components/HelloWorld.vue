@@ -31,13 +31,32 @@
       },
       admin(){
         this.userid=1
-        sessionStorage.setItem("userid","1")
+        sessionStorage.setItem("userId","10000")
+        sessionStorage.setItem("role","管理员"),
+          sessionStorage.setItem("userName","admin")
         sessionStorage.setItem("activeIndex","/followMenu/studentlist")
         this.$router.push({path:"/followMenu/studentlist"})
       },
+
+  //     if(this.roleId==0){
+  //   sessionStorage.setItem("userId",this.userId)
+  //   sessionStorage.setItem("activeIndex","/followMenu/studentlist")
+  //   this.$router.push({path:"/followMenu/studentlist"})
+  //     }else if (this.roleId==1) {
+  //   sessionStorage.setItem("userId",this.userId)
+  //   sessionStorage.setItem("activeIndex","/followMenu/tStudentList")
+  //   this.$router.push({path:"/followMenu/tStudentList"})
+  // }else{
+  //   sessionStorage.setItem("userId",this.userId)
+  //   sessionStorage.setItem("activeIndex","/followMenu/tStudentList")//项目经理跳转的主页
+  //   this.$router.push({path:"/followMenu/tStudentList"})//项目经理跳转的主页
+  // }
+  //     sessionStorage.setItem("userName",this.userName)
       techer(){
         this.userid=2
-        sessionStorage.setItem("userid","2")
+        sessionStorage.setItem("userName","张飞范")
+        sessionStorage.setItem("role","教师"),
+        sessionStorage.setItem("userId","10002")
         sessionStorage.setItem("activeIndex","/followMenu/tStudentList")
         this.$router.push({path:"/followMenu/tStudentList"})
       },

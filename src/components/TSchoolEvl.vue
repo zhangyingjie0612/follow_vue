@@ -3,7 +3,7 @@
     <el-table
       :data="empData"
       stripe
-      style="width: 90%;margin-left: 5%;height: 750px">
+      style="width: 90%;margin-left: 5%;height: 700px;margin-top: 2%">
       <el-table-column>
         <template slot="header" slot-scope="scope">
           <span style="font-size: x-large">学员基本信息</span>
@@ -42,11 +42,9 @@
       </el-table-column>
       <el-table-column
         prop="evlContent"
-        label="评价"
-        align="center">
+        label="评价">
       </el-table-column>
-      <el-table-column label="操作"
-                       prop="evlScore">
+      <el-table-column label="操作" align="center" prop="evlScore">
         <template slot-scope="scope">
           <el-button size="mini" type="primary":disabled="scope.row.evlScore != '未评价'"
                      @click="handleEdit1(scope.$index, scope.row)"
@@ -157,7 +155,7 @@
     </el-dialog>
     <div>
       <el-pagination
-        @current-change="getEmpListByPage"
+        @current-change="getStuListByPage"
         :current-page.sync="curPage"
         :page-size="pagesize"
         :pager-count="7"
@@ -175,6 +173,7 @@
   export default {
         name: "TSchoolEvl",
     data() {
+      //    表单验证评价
       var checkOldPwd = (rule, value, callback) => {
         if (!value) {
           return callback(new Error('评价不能为空'));
@@ -182,7 +181,7 @@
 
           callback();
         }
-      };
+      }; //    表单验证评价
       var checkOldPwd1 = (rule, value, callback) => {
         if (!value) {
           return callback(new Error('评价不能为空'));
@@ -190,6 +189,7 @@
           callback();
         }
       };
+      //    表单验证整体分数
       var validatePass = (rule, value, callback) => {
         const cEvlScore=/^([0-4]\.\d)$|^[0-5]{1}$/
         if (value === null) {
@@ -204,7 +204,7 @@
         }
       };
       return {
-        rules: {
+        rules: {//    修改的表单验证
           evlScore: [
             { required: true,validator: validatePass, trigger: 'blur' }
           ],
@@ -212,7 +212,7 @@
             {required: true, validator: checkOldPwd, trigger: 'blur' }
           ]
         },
-        rules1: {
+        rules1: {//    评价的的表单验证
           evlScore: [
             { required: true,validator: validatePass, trigger: 'blur' }
           ],
@@ -224,42 +224,39 @@
           f1:"",
           f2:""
         },
-        dialogTableVisible: false,
-        dialogTableVisible1: false,
-        band:true,
-        formLabelWidth:'120px',
+        dialogTableVisible: false,//评价弹框
+        dialogTableVisible1: false,//修改弹框
+        formLabelWidth:'120px',//lable的宽度
         pagesize:5,
         curPage:1,
-        scoreData:'',
-        selectOptionsAll:[],
-        tableData: [],
-        form: {
+        scoreData:'',//成绩
+        tableData: [],//每行查看和编辑的数据
+        form: {//评价的表单
           stuId:'',
           stuname:'',
           evlScore:null,
           evlContent:''
         },
-        updateForm: {
+        updateForm: {//修改评价的表单
           stuId:'',
           stuname:'',
           evlScore:null,
           evlContent:''
         },
-        schoolEvl:{
+        schoolEvl:{//最终提交后台的评价的表单
           stuId:null,
-          userId:'2',
+          userId:sessionStorage.getItem("userId"),
           evlScore:null,
           evlContent:null,
         },
         //分页员工数据
         empData: [],
         aData:'',
-        userid:"2",
+        userid:sessionStorage.getItem("userId"),
         totalEmpData: [],
         stuname:"all",//对应filters的f1,用于发送axios请求
         className:"all",
-        classDate:[],
-        asd:null
+        classDate:[],//教的班期
       }
     },
     methods:{
@@ -289,8 +286,8 @@
           this.className="all"
         }
       },
-      //    获取分页员工列表
-      getEmpListByPage(){
+      //    获取分页学生列表
+      getStuListByPage(){
         this.checkFilter();
         axios.get('/getSchoolEvl/'+this.curPage+'/'+this.pagesize+'/'+this.stuname +'/'+ this.userid+'/'+ this.className).then(res => {
           this.empData = res.data;
@@ -304,15 +301,15 @@
           }
         })
       },
-      //  获取产品列表
-      getEmpList(){
+      //  获取学生列表
+      getStuList(){
         this.checkFilter();
         axios.get('getSchoolEvlByLike/'+this.stuname +'/'+ this.userid+'/'+ this.className).then(res =>{
           this.totalEmpData = res.data
           // console.log(null);
         })
       },
-      handleEdit(index, row) {
+      handleEdit(index, row) {//点击修改后
         this.className = row.className
         this.nameStr=row.stuName
         this.updateForm.stuname=row.stuName
@@ -322,7 +319,7 @@
         this.getStudentsScore();
         this.getCourse();
       },
-      handleEdit1(index, row) {
+      handleEdit1(index, row) {//点击评价后
         console.log(row);
         this.className = row.className
         this.nameStr=row.stuName
@@ -344,7 +341,7 @@
       },
       //获取学生成绩
       getStudentsScore() {
-        axios.get('/getStudentList2/' + this.nameStr+'/'+this.className).then(res => {
+        axios.get('/getStudentList3/' + this.nameStr+'/'+this.className).then(res => {
           this.tableData = res.data
           console.log(this.tableData)
         })
@@ -437,10 +434,10 @@
         });
       },
       refreshList(){
-        this.getEmpListByPage();
-        this.getEmpList();
+        this.getStuListByPage();
+        this.getStuList();
       },
-      //获取下拉框中内容
+      //获取班级下拉框中内容
       getOptions(){
         axios.get('/getClassName/'+this.userid).then(res =>{
           this.classDate=res.data
@@ -450,8 +447,8 @@
         })
       },
       winload(){
-        this.getEmpListByPage();
-        this.getEmpList();
+        this.getStuListByPage();
+        this.getStuList();
         this.getOptions();
       }
     },
