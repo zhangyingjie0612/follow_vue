@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div  id="div1">
-      <span id="span1">学员详细信息</span>
-    </div>
+<!--    <div  id="div1">-->
+<!--      <span id="span1">学员详细信息</span>-->
+<!--    </div>-->
     <el-button style="float: left" @click="returnList()">返回</el-button>
-    <table style="width: 1200px;margin-left: 10%" align="center">
+    <table style="width: 1200px;margin-left: 10%;height: 250px" align="center">
       <tr>
         <td style="font-weight: bolder;font-size:16px;width: 120px">姓名</td>
         <td width="200">{{stuData.stuName}}</td>
@@ -98,7 +98,7 @@
         </el-table-column>
       </el-table-column>
     </el-table>
-      <table style="width: 1201px;height: 200px;width: 1201px;margin-left: 10%" align="left">
+      <table style="width: 1201px;height: 120px;width: 1201px;margin-left: 10%" align="left">
         <tr>
           <td style="font-weight: bolder;width: 160px;">评价(包括主要优点及缺陷)</td>
           <td class="td-explainleft">
@@ -221,12 +221,12 @@
   .td-explainleft div{position:absolute; left:0; top:0;}
 
   #span1{
-    font-size: 37px;
+    font-size: 28px;
   }
   #div1{
     margin: 0;
     padding: 0;
-    height: 70px;
+    height: 40px;
     font-size: 30px;
     background-color: #F5F5F5;
     line-height:70px;

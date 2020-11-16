@@ -2,7 +2,7 @@
   <div>
     <el-table
       :data="tableData"
-      style="width: 90%;margin-left: 5%;height: 700px;margin-top: 2%">
+      style="width: 90%;margin-left: 5%;height: 650px;margin-top: 2%"
       align="center">
       <el-table-column>
         <template slot="header" slot-scope="scope">

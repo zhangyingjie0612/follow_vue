@@ -4,7 +4,7 @@
     <el-col :offset="1" :span="22">
       <el-table
         @selection-change="handleSelectionChange"
-        :data="pageData" stripe border height="500px">
+        :data="pageData" stripe border height="650px">
         <!--多级表头-->
         <el-table-column>
           <template slot="header" slot-scope="scope">

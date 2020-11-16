@@ -4,7 +4,7 @@
       :data="teacherListData"
       stripe
       @selection-change="handleSelectionChange"
-      style="width: 90%;margin-left: 5%;height: 700px;margin-top: 2%">
+      style="width: 90%;margin-left: 5%;height: 650px;margin-top: 2%">
       <el-table-column>
         <template slot="header" slot-scope="scope">
           <span style="font-size: x-large">教师信息管理</span>

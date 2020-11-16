@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-container style="height: 915px; border: 1px solid #eee">
+    <el-container style="height: 815px; border: 1px solid #eee">
       <el-header style="font-size: 12px;height: 60px">
         <div style="float: left">
           <span style="font-size: 18px;font-weight:bolder;font-family: PingFang SC;">金桥学员成长跟踪系统({{role}})</span>
@@ -12,7 +12,7 @@
         </div>
       </el-header>
       <el-container>
-        <el-aside width="200px" style="background-color: rgb(238, 241, 246);height: 855px">
+        <el-aside width="200px" style="background-color: rgb(238, 241, 246);height: 755px">
           <el-menu :default-active="activeIndex">
             <navigation-item v-for="(menu,i) in adminMenus" :key="i" :item="menu"/>
           </el-menu>
