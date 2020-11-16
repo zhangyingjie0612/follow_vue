@@ -37,7 +37,7 @@
           return{
             activeIndex:sessionStorage.getItem("activeIndex"),
             adminMenus: [],
-            userid:sessionStorage.getItem("userid"),
+            userid:sessionStorage.getItem("userId"),
           }
       },
       methods: {

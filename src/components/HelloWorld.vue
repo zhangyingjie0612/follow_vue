@@ -1,3 +1,5 @@
+
+
 <template>
   <div class="hello">
     <el-button  size="mini" @click="admin()" type="danger"  circle>admin</el-button>
