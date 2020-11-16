@@ -65,7 +65,7 @@
         </td>
         <td>
           <el-form-item label="身份证号码" :label-width="formLabelWidth" prop="idcard">
-            <el-input v-model="tableData.idcard" placeholder="请输入内容"></el-input>
+            <el-input v-model="tableData.idCard" placeholder="请输入内容"></el-input>
           </el-form-item>
         </td>
         <td>
@@ -142,7 +142,7 @@
           birthplace:'',
           marry:'',
           telephone:'',
-          idcard:'',
+          idCard:'',
           university:'',
           major:'',
           photo:'',
@@ -175,7 +175,7 @@
             { required: true, message: '请输入电话号码', trigger: 'blur' },
             { pattern: /^1[3|4|5|6|7|8][0-9]{9}$/, message: '输入的格式不正确', trigger: 'blur' }
           ],
-          idcard:[
+          idCard:[
             { required: true, message: '请输入身份证号', trigger: 'blur' },
             { pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/, message: '请输入正确的格式', trigger: 'blur' }
           ],
