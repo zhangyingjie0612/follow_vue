@@ -1,24 +1,10 @@
 <template>
   <div>
-<!--    &lt;!&ndash;工具条&ndash;&gt;-->
-<!--    <el-col :span="24" class="toolbar" style="padding-bottom: 0;">-->
-<!--      <el-form :inline="true">-->
-<!--        &lt;!&ndash;filters是条件查询的过滤器&ndash;&gt;-->
-<!--        <el-form-item>-->
-<!--          <el-input v-model="filters.f1" placeholder="输入教师姓名搜索"></el-input>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item>-->
-<!--          <el-button type="primary" v-on:click="refreshList()">查询</el-button>-->
-<!--          <el-button type="primary" v-on:click="addTeacher = true;addWin()">新增</el-button>-->
-<!--          <el-button type="danger"  @click="delOrderByIds">删除</el-button>-->
-<!--        </el-form-item>-->
-<!--      </el-form>-->
-<!--    </el-col>-->
     <el-table
-      :data="empData"
+      :data="teacherListData"
       stripe
       @selection-change="handleSelectionChange"
-      style="width: 90%;margin-left: 5%;height: 750px">
+      style="width: 90%;margin-left: 5%;height: 650px;margin-top: 2%">
       <el-table-column>
         <template slot="header" slot-scope="scope">
           <span style="font-size: x-large">教师信息管理</span>
@@ -60,14 +46,14 @@
         label="邮箱"
         align="center">
       </el-table-column>
-      <el-table-column label="操作"
+      <el-table-column label="操作"          align="center"
                        prop="evlScore">
         <template slot-scope="scope">
-          <el-button size="mini" :visible.sync="dialogTableVisible"
+          <el-button size="mini" type="primary" :visible.sync="dialogTableVisible"
                      @click="dialogTableVisible = true;handleEdit1(scope.$index, scope.row)"
           >查看</el-button>
-          <el-button size="mini" :visible.sync="updateTeacher"
-                     @click="updateTeacher = true;handleEdit1(scope.$index, scope.row)"
+          <el-button size="mini" type="success" :visible.sync="updateTeacher"
+                     @click="updateTeacher = true,handleEdit1(scope.$index, scope.row)"
           >编辑</el-button>
         </template>
       </el-table-column>
@@ -233,11 +219,11 @@
     </el-dialog>
     <div>
       <el-pagination
-        @current-change="getEmpListByPage"
+        @current-change="getTeaListByPage"
         :current-page.sync="curPage"
         :page-size="pagesize"
         :pager-count="7"
-        :total="totalEmpData.length"
+        :total="totalTeacherData.length"
         background
         layout="total, prev, pager, next, jumper">
       </el-pagination>
@@ -268,7 +254,7 @@
           }, 100)
         };
         return {
-          rules: {
+          rules: {//表单验证
             userName: [
               { required: true, message: '请输入姓名', trigger: 'blur' },
             ],
@@ -297,42 +283,32 @@
           filters:{//模糊查询的过滤器，绑定input框
             f1:""
           },
-          dialogTableVisible: false,
-          dialogTableVisible1: false,
-          multiDeleteVisible:false,
-          multipleSelection:[],
-          updateTeacher:false,
-          addTeacher:false,
-          imageUrl: '',
-          imgPath: '',
+          dialogTableVisible: false,//查看弹框
+          multipleSelection:[],//复选框监听的数组
+          updateTeacher:false,//编辑弹框
+          addTeacher:false,//新增弹框
+          imageUrl: '',//回显的照片路径
+          imgPath: '',//返回照片的名字
           formLabelWidth:"110px",
-          pagesize:5,
+          pagesize:10,//一页放多少数据
           curPage:1,
-
-          form: {
-            stuid:'',
-            userName:'',
-            evlScore:'',
-            evlContent:''
-          },
-          //分页员工数据
-          empData: [],
-          aData:'',
-          teacherDate:{
+          //分页教师数据
+          teacherListData: [],
+          teacherDate:{//编辑/查看表单的数据
             birthday:'',
             deptNo:1,
             email:'',
-            flag:'',
-            pwd:'123',
+            flag:'',//就职状态
+            pwd:'',
             idCard:'',
             roleId:1,
             sex:'',
             telephone:'',
             userId:'',
             userName:'',
-            note:'',
+            note:'',//备注
           },
-          teacherDate1:{
+          teacherDate1:{//新增表单的数据
             birthday:'',
             deptNo:1,
             email:'',
@@ -346,11 +322,9 @@
             userId:'',
             userName:'',
           },
-          userid:"2",
-          totalEmpData: [],
+          userid:sessionStorage.getItem("userId"),
+          totalTeacherData: [],
           userName:"all",//对应filters的f1,用于发送axios请求
-          classDate:[],
-          asd:null
         }
       },
       methods:{
@@ -369,7 +343,7 @@
           this.addTeacher = false
           this.winload()
         },
-        /*url不能传‘’空字符串，故用stuname替换之*/
+        /*url不能传‘’空字符串，故用userName替换之*/
         checkFilter(){
           if (""!==this.filters.f1 ){
             this.userName=this.filters.f1
@@ -377,39 +351,40 @@
             this.userName="all"
           }
         },
-        //    获取分页员工列表
-        getEmpListByPage(){
+        //    获取分页教师列表
+        getTeaListByPage(){
           this.checkFilter();
           axios.get('/getTeacher/'+this.curPage+'/'+this.pagesize+'/'+this.userName).then(res => {
-            this.empData = res.data;
-            for (var i in this.empData) {
-              if (this.empData[i].flag == 1){
-                this.empData[i].flag="在职"
+            this.teacherListData = res.data;
+            for (var i in this.teacherListData) {
+              if (this.teacherListData[i].flag == 1){
+                this.teacherListData[i].flag="在职"
               }
               else {
-                this.empData[i].flag="离职"
+                this.teacherListData[i].flag="离职"
               }
             }
           })
         },
         //  获取产品列表
-        getEmpList(){
+        getTeaList(){
           this.checkFilter();
           axios.get('getTeacherByLike/'+this.userName).then(res =>{
-            this.totalEmpData = res.data
+            this.totalTeacherData = res.data
             // console.log(null);
           })
         },
         updateTeacher1(teacherDate) {//编辑
           this.$refs[teacherDate].validate((valid) => {
             if (valid) {
-              // console.log(this.imageUrl.substring(0,18));
-              // console.log(this.imageUrl.substring(18));
-              if ("../../static/imgs/" == this.imageUrl.substring(0,18)) {
-                this.imageUrl=this.imageUrl.substring(18)
+              console.log(this.imageUrl.substring(0,29));
+              console.log(this.imageUrl.substring(29));
+              //判断照片是否被修改
+              if ("http://localhost:8080/images/" == this.imageUrl.substring(0,29)) {
+                this.imageUrl=this.imageUrl.substring(29)
                 this.teacherDate.photo=this.imageUrl
               }else {
-                // console.log( this.imgPath);
+                console.log( this.imgPath);
                 this.teacherDate.photo=this.imgPath
               }
               if (this.teacherDate.flag == "在职"){
@@ -430,7 +405,7 @@
                   this.winload();
                 }else{
                   this.$message({
-                    message: '编辑成功',
+                    message: '编辑失败',
                     type: 'warning',
                     offset:350
                   });
@@ -446,19 +421,19 @@
             }
           });
         },
+        //编辑查看时获取改行数据
         handleEdit1(index, row) {
           console.log(row);
           this.teacherDate=row
-          this.photo1=this.teacherDate.photo
           this.imageUrl=this.teacherDate.photo
           // console.log(row.photo.require());
         },
-
+        //搜索
         refreshList(){
-          this.getEmpListByPage();
-          this.getEmpList();
+          this.getTeaListByPage();
+          this.getTeaList();
         },
-        addWin(){
+        addWin(){//清空
           this.imageUrl=null
         },
         addTeacher1(teacherDate1){//新增
@@ -477,7 +452,7 @@
                   this.winload();
                 }else{
                   this.$message({
-                    message: '新增成功',
+                    message: '新增失败',
                     type: 'warning',
                     offset:350
                   });
@@ -542,6 +517,7 @@
             })
           }
         },
+        //监听多选
         handleSelectionChange(val) {
           this.multipleSelection = val;
           console.log(this.multipleSelection)
@@ -565,9 +541,10 @@
           }
           return isJPG && isLt2M;
         },
+        //进入页面加载
         winload(){
-          this.getEmpListByPage();
-          this.getEmpList();
+          this.getTeaListByPage();
+          this.getTeaList();
         }
       },
       mounted() {
