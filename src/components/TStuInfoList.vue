@@ -10,7 +10,6 @@
           <div style="float: right;margin-right: 20px">
             <el-input placeholder="输入姓名搜索" style="width: 200px" v-model="filters.f1"></el-input>
             <el-select
-              @change="getOptions"
               v-model="filters.f2"
               placeholder="请选择班期"
               maxlength="255">
@@ -95,6 +94,8 @@
             f1:"",
             f2:""
           },
+          backFlag:false,
+          firstClass:'',//默认的老师第一个班级
           totalStuData: []//分页学生信息
         }
       },
@@ -106,10 +107,11 @@
           }else {
             this.stuname="all"
           }
-          if (""!==this.filters.f2 && "全部"!=this.filters.f2){
+          if (""!==this.filters.f2){
             this.classname=this.filters.f2
           }else {
-            this.classname="all"
+            console.log(this.firstClass)
+            this.classname=this.firstClass
           }
         },
         //    获取分页学生列表
@@ -128,14 +130,9 @@
           })
         },
         handleEdit(index, row) {
-          console.log(index, row);
-          console.log( row);
-          console.log(row.username);
           this.$router.push({path:"/update",query:{username:row.username,password:row.password,id:row.id}})
 
         }, handleEdit1(index, row) {
-          // console.log( row);
-          // this.stuData=row
           this.$router.push({path:"/followMenu/tStudentInfoList",query:{stuData:row}})
         },
 
@@ -143,9 +140,11 @@
         getOptions(){
           axios.get('/getClassName/'+this.userid).then(res =>{
             this.classDate=res.data
-            this.classDate.push({className:"全部"})
-            console.log(this.classDate);
-
+            this.firstClass=this.classDate[0].className
+            if (!this.backFlag) {
+              this.filters.f2=this.firstClass
+            }
+            this.refreshList();
           })
         },
         refreshList(){
@@ -159,10 +158,10 @@
         this.filters.f2=this.$route.query.className
         if (this.filters.f2==null) {
           this.filters.f2=""
+          this.backFlag=false
+        }else {
+          this.backFlag=true
         }
-        console.log(this.filters.f2)
-        this.getStuListByPage();
-        this.getStuListByLike();
         this.getOptions();
       }
     }
