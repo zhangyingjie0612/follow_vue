@@ -122,7 +122,7 @@
             sessionStorage.setItem("userId",this.userId);
             if (this.roleId==0){
               this.role = "管理员"
-            }else if (this.roleId==0){
+            }else if (this.roleId==1){
               this.role = "讲师"
             }else {
               this.role = "项目经理"
