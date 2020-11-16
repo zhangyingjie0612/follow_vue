@@ -113,6 +113,7 @@
     name: "TStudentList",
     data() {
       return {
+        firstClass:'',
         filters:{//模糊查询的过滤器，绑定input框
           f1:"",
           f2:""
@@ -151,6 +152,9 @@
         axios.get('/getClassName/'+this.userid).then(res => {
           this.selectOptionsAll = res.data
           console.log(this.selectOptionsAll)
+          this.firstClass=this.selectOptionsAll[0].className
+          this.filters.f2=this.firstClass
+          this.refreshList()
         })
       },
       //查询方法给名字赋值
@@ -165,16 +169,14 @@
       checkFilter2(){
         if (""!==this.filters.f2){
           this.className=this.filters.f2
-        }else if(""===this.filters.f2){
-          this.className="金桥工程48期"
         }else {
-          this.className="all"
+          console.log(this.firstClass)
+          this.className=this.firstClass
         }
       },
       //初始加载的方法
       refreshList(){
         this.getCourse();
-        this.getClassName();
         this.getStudents();
         this.getStudents2();
       },
@@ -211,7 +213,7 @@
       }
     },
     mounted() {
-      this.refreshList()
+      this.getClassName();
     }
   }
 </script>

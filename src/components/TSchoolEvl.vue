@@ -10,7 +10,6 @@
           <div style="float: right;margin-right: 20px">
             <el-input placeholder="输入姓名搜索" style="width: 200px" v-model="filters.f1"></el-input>
             <el-select
-              @change="getOptions"
               v-model="filters.f2"
               placeholder="请选择班期"
               maxlength="255">
@@ -227,7 +226,7 @@
         dialogTableVisible: false,//评价弹框
         dialogTableVisible1: false,//修改弹框
         formLabelWidth:'120px',//lable的宽度
-        pagesize:5,
+        pagesize:10,
         curPage:1,
         scoreData:'',//成绩
         tableData: [],//每行查看和编辑的数据
@@ -442,8 +441,8 @@
         axios.get('/getClassName/'+this.userid).then(res =>{
           this.classDate=res.data
           this.classDate.push({className:"全部"})
+          this.filters.f2="全部"
           console.log(this.classDate);
-
         })
       },
       winload(){
