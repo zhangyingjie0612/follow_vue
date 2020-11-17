@@ -141,7 +141,7 @@
           axios.get('/getClassName/'+this.userid).then(res =>{
             this.classDate=res.data
             this.firstClass=this.classDate[0].className
-            if (!this.backFlag) {
+            if (!this.backFlag) {//如果有返回值，filters.f2=返回值，不等于班级数组第一个
               this.filters.f2=this.firstClass
             }
             this.refreshList();
@@ -158,7 +158,7 @@
         this.filters.f2=this.$route.query.className
         if (this.filters.f2==null) {
           this.filters.f2=""
-          this.backFlag=false
+          this.backFlag=false//如果有返回值，filters.f2=返回值，不等于班级数组第一个
         }else {
           this.backFlag=true
         }

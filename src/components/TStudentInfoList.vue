@@ -1,8 +1,8 @@
 <template>
   <div>
-<!--    <div  id="div1">-->
-<!--      <span id="span1">学员详细信息</span>-->
-<!--    </div>-->
+    <div  id="div1">
+      <span id="span1">学员详细信息</span>
+    </div>
     <el-button style="float: left" @click="returnList()">返回</el-button>
     <table style="width: 1200px;margin-left: 10%;height: 250px" align="center">
       <tr>
@@ -226,7 +226,7 @@
   #div1{
     margin: 0;
     padding: 0;
-    height: 40px;
+    height: 70px;
     font-size: 30px;
     background-color: #F5F5F5;
     line-height:70px;

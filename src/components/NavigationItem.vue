@@ -37,6 +37,7 @@
       methods: {
         handleRoute (menu) {
           // 通过菜单URL跳转至指定路由
+          sessionStorage.setItem("activeIndex",menu.path);
           this.$router.push(menu.path)
         }
       }
