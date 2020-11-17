@@ -104,12 +104,13 @@
         var today2 = this.formatDate(today);
         this.loginForm.loginTime=today2;
         axios.post("/user/getLogin", this.loginForm).then(res => {
-          if (null == res.data) {
+        /*  if ( res.data) {
             this.$message({
               message: '用户名或密码错误！',
               type: 'fail'
             });
-          } else {
+          } else */
+            if(res.data.userId!=null){
             if (this.remember == true) {
               this.setCookie(this.loginForm.userName,this.loginForm.pwd,7);
             }else {
@@ -139,6 +140,12 @@
               sessionStorage.setItem("activeIndex","/followMenu/tStudentList");//项目经理跳转的主页
               this.$router.push({path:"/followMenu/tStudentList"})//项目经理跳转的主页
             }
+          }
+          else {
+            this.$message({
+              message: '用户名或密码错误！',
+              type: 'fail'
+            });
           }
         })
       }

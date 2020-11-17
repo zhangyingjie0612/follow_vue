@@ -1,7 +1,7 @@
 <template>
   <div>
     <!--form表单模块，由formShow控制显隐-->
-    <el-col :offset="9" :span="6" style="margin-top: 5%"  v-show="formShow" >
+    <el-col :offset="8" :span="8" style="margin-top: 5%"  v-show="formShow" >
       <h3 style="margin-bottom: 50px ">成绩录入</h3>
       <el-form :model="formData" :rules="formRules" ref="formRef">
         <el-form-item  label="请选择打分班级" prop="class" >
@@ -170,6 +170,13 @@
                 this.$message({
                   message: '操作成功',
                   type: 'success'
+                });
+                this.$refs['formRef'].resetFields();
+                this.switchShow();
+              }else {
+                this.$message({
+                  message: '操作失败',
+                  type: 'fail'
                 });
               }
             })

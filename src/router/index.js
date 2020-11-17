@@ -17,7 +17,10 @@ import Login from "../components/Login";
 import DeptTable from "../components/DeptTable";
 import CourseTable from "../components/CourseTable";
 import AddScore from "../components/AddScore";
-
+import JobEvlOption from "../components/JobEvlOption";
+import Evl from "../components/Evl";
+import AManage from "../components/AManage";
+import ChangePwd2 from "../components/ChangePwd2";
 //修改首页面路由重复点击报错
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
@@ -38,6 +41,7 @@ const router = new Router({
       name: 'Login',
       component: Login
     },
+
 
 
     /*hmt测试用*/
@@ -134,6 +138,12 @@ const router = new Router({
           children: null
         },
         {
+          path: "changePwd2",
+          name: "ChangePwd2",
+          component: ChangePwd2,
+          children: null
+        },
+        {
           path: 'toGetClass',
           name: 'ToGetClass',
           component: ToGetClass
@@ -154,6 +164,21 @@ const router = new Router({
           path: 'addScore',
           name: 'AddScore',
           component: AddScore
+        },
+        {
+          path: 'jobEvlOption',
+          name: 'JobEvlOption',
+          component: JobEvlOption
+        },
+        {
+          path: 'evl',
+          name: 'Evl',
+          component: Evl
+        },
+        {
+          path: 'aManage',
+          name: 'AManage',
+          component: AManage
         },
       ]
     }
